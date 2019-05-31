@@ -74,3 +74,8 @@ WebGIS für Schulen
 # Todo (nach Hackathon)
 
 * Duale Map für Vergleiche
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/97474a98-2495-45de-b1fd-9e27906baae9/deploy-status)](https://app.netlify.com/sites/webgisnrw/deploys)
+
+
+
