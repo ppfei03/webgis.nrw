@@ -70,6 +70,7 @@ export default class Listeners {
       } else if ($('#custom_csv_input').get(0).files.length === 0) {
         alert('Bitte laden Sie Ihre CSV Datei hoch');
       } else {
+        console.log('Start mit CSV');
         this.getActiveMap().importCSV();
         $('#csvModal').modal('toggle');
       }
@@ -171,6 +172,15 @@ export default class Listeners {
         this.getActiveMap().setData(
           'Anteil_Erwerbstaetige_ProduzierendesGewerbe_UTF8',
           'Erwerbstaetige_Gewerbe'
+        );
+      });
+
+    document
+      .getElementById('Einbuergerungen_Auslaender')
+      .addEventListener('click', () => {
+        this.getActiveMap().setData(
+          'Einbuergerungen_von_Auslaendern',
+          'Einbuergerungen_Auslaender'
         );
       });
 

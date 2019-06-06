@@ -6,6 +6,8 @@ export default class CSVParser {
   // CSV handler functions
 
   getAsText(fileToRead, callback) {
+    console.log('reading file');
+
     const reader = new FileReader();
     // Read file into memory as UTF-8
     reader.readAsText(fileToRead);
@@ -28,6 +30,8 @@ export default class CSVParser {
     const customDataset = {
       title: title,
       unit: unit,
+      MIN: 0,
+      MAX: 0,
       data: []
     };
 
@@ -48,12 +52,36 @@ export default class CSVParser {
             RS: csvRow[0],
             AGS: csvRow[0],
             GEN: csvRow[1],
+            MIN: 0,
+            MAX: 0,
             data: {}
           };
-
           header.forEach((element, idx) => {
             if (!isNaN(Number(element)) && element !== '') {
               cityObject.data[`${element}`] = csvRow[idx].replace(',', '.');
+              // eslint-disable-next-line no-undef
+              cityObject.MAX = this._setAndFindMax(
+                cityObject.MAX,
+                Number(csvRow[idx])
+              );
+              cityObject.MIN = this._setAndFindMin(
+                cityObject.MIN,
+                Number(csvRow[idx])
+              );
+            } else if (customDataset.unit === 'wahlen') {
+              if (idx > 1) {
+                if (!isNaN(Number(csvRow[idx]))) {
+                  cityObject.data[`${element}`] = csvRow[idx].replace(',', '.');
+                  cityObject.MAX = this._setAndFindMax(
+                    cityObject.MAX,
+                    Number(csvRow[idx])
+                  );
+                  cityObject.MIN = this._setAndFindMin(
+                    cityObject.MIN,
+                    Number(csvRow[idx])
+                  );
+                }
+              }
             }
           }, this);
 
@@ -63,6 +91,22 @@ export default class CSVParser {
       .on('done', () => {
         callback(customDataset);
       });
+  }
+
+  _setAndFindMax(MAX, csvRowIndx) {
+    if (MAX < csvRowIndx) {
+      MAX = csvRowIndx;
+    }
+
+    return MAX;
+  }
+
+  _setAndFindMin(MIN, csvRowIndx) {
+    if (MIN > csvRowIndx || MIN === 0) {
+      MIN = csvRowIndx;
+    }
+
+    return MIN;
   }
 
   errorHandler(evt) {

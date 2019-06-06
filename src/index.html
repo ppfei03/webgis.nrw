@@ -126,6 +126,9 @@
                 <button type="button" class="btn btn-outline-primary btn-block" id="Erwerbstaetige_Gewerbe">
                   <i class="material-icons">business</i>
                   Erwerbstätige Gewerbe</button>
+                <button type="button" class="btn btn-outline-primary btn-block" id="Einbuergerungen_Auslaender">
+                  <i class="material-icons">home</i>
+                  Einbürgerungen</button>
                 <hr>
                 <button type="button" class="btn btn-outline-primary btn-block" id="KiTas">
                   <i class="material-icons">child_care</i>
@@ -158,7 +161,7 @@
             <!-- <br/> -->
             <button type="button" class="btn btn-primary" id="csv_modal_launch">CSV Datei einfügen</button>
             <!-- <input type="file" id="custom_csv_input" accept=".csv"> -->
-            <!-- <p id="csv_info"></p> -->
+             <p id="csv_info"></p>
           </div>
         </li>
         <li class="nav-item dropup">
@@ -242,6 +245,17 @@
             <br />
             <button type="button" class="btn btn-outline-primary btn-block" id="print">Exportieren</button>
           </div>
+        </li>
+        <li class="nav-item dropup">
+          <a class="nav-link dropdown-toggle" id="dropdown_stats" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Test</a>
+
+        </li>
+        <li class="nav-item dropup">
+          <a class="nav-link dropdown-toggle" id="dropdown_stats" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Test2</a>
+
+        </li><li class="nav-item dropup">
+          <a class="nav-link dropdown-toggle" id="dropdown_stats" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Test22222</a>
+
         </li>
       </ul>
 
@@ -340,12 +354,12 @@
           <form>
             <div class="form-group">
               <label for="csv_title">Titel</label>
-              <input type="text" class="form-control" id="csv_title" aria-describedby="titleHelp" placeholder="Titel des Datensatzes">
+              <input type="text" class="form-control" id="csv_title" aria-describedby="titleHelp" value="Europawahl"placeholder="Titel des Datensatzes">
               <small id="titleHelp" class="form-text text-muted">Der Titel beschreibt den Inhalt und Kontext des Datensatzes</small>
             </div>
             <div class="form-group">
               <label for="csv_unit">Einheit</label>
-              <input type="text" class="form-control" id="csv_unit" aria-describedby="unitHelp" placeholder="Einheit">
+              <input type="text" class="form-control" id="csv_unit" aria-describedby="unitHelp" value="wahlen"placeholder="Einheit">
               <small id="unitHelp" class="form-text text-muted">Die Einheit gibt die Einheit des Datensatzes an, z.B. "%"</small>
             </div>
             <div class="form-group">
@@ -381,6 +395,8 @@
         </div>
         <div class="modal-body">
           <p>Das webgis.nrw ist die Plattform für modernen Schulunterricht in NRW.</p>
+          <p>Das webgis.nrw ist die Plattform für modernen Schulunterricht in NRW.</p>
+
           <p>Dank offener Daten können aktuelle Themen aus allen Bereichen der Gesellschaft fächerübergreifend genutzt werden.</p>
           <p>Der Quellcode kann hier gefunden werden:
             <a href="https://github.com/giatschool/webgis.nrw">https://github.com/giatschool/webgis.nrw</a>
