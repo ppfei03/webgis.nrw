@@ -1,40 +1,68 @@
 import geostats from 'geostats';
 
 export default class Statistics {
-  static getEqualInterval(data, number_of_classes) {
+  static getEqualInterval(data, featureMin, featureMax, number_of_classes) {
     const serie = new geostats(data);
 
-    return serie.getClassEqInterval(number_of_classes);
+    return serie.getClassEqInterval(number_of_classes, featureMin, featureMax);
   }
 
-  static getClassStdDeviation(data, number_of_classes) {
+  static getClassStdDeviation(data, featureMin, featureMax, number_of_classes) {
     const serie = new geostats(data);
 
-    return serie.getClassStdDeviation(number_of_classes);
+    return serie.getClassStdDeviation(
+      number_of_classes,
+      featureMin,
+      featureMax
+    );
   }
 
-  static getClassArithmeticProgression(data, number_of_classes) {
+  static getClassArithmeticProgression(
+    data,
+    featureMin,
+    featureMax,
+    number_of_classes
+  ) {
     const serie = new geostats(data);
 
-    return serie.getClassArithmeticProgression(number_of_classes);
+    return serie.getClassArithmeticProgression(
+      number_of_classes,
+      featureMin,
+      featureMax
+    );
   }
 
-  static getClassGeometricProgression(data, number_of_classes) {
+  static getClassGeometricProgression(
+    data,
+    featureMin,
+    featureMax,
+    number_of_classes
+  ) {
     const serie = new geostats(data);
 
-    return serie.getClassGeometricProgression(number_of_classes);
+    return serie.getClassGeometricProgression(
+      number_of_classes,
+      featureMin,
+      featureMax
+    );
   }
 
-  static getClassQuantile(data, number_of_classes) {
+  static getClassQuantile(data, featureMin, featureMax, number_of_classes) {
     const serie = new geostats(data);
 
-    return serie.getClassQuantile(number_of_classes);
+    return serie.getClassQuantile(number_of_classes, featureMin, featureMax);
   }
 
-  static getClassJenks(data, number_of_classes) {
+  static getClassJenks(data, featureMin, featureMax, number_of_classes) {
     const serie = new geostats(data);
 
-    return serie.getClassJenks(number_of_classes);
+    return serie.getClassJenks(number_of_classes, featureMin, featureMax);
+  }
+
+  static getUniqueValues(data, featureMin, featureMax, number_of_classes) {
+    const serie = new geostats(data);
+
+    return serie.getUniqueValues(number_of_classes, featureMin, featureMax);
   }
 
   static getRanges(data) {

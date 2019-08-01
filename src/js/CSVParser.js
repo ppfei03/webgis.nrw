@@ -70,15 +70,15 @@ export default class CSVParser {
               );
             } else if (customDataset.unit === 'wahlen') {
               if (idx > 1) {
-                if (!isNaN(Number(csvRow[idx]))) {
+                if (!isNaN(Number(csvRow[idx].replace(',', '.')))) {
                   cityObject.data[`${element}`] = csvRow[idx].replace(',', '.');
                   cityObject.MAX = this._setAndFindMax(
                     cityObject.MAX,
-                    Number(csvRow[idx])
+                    Number(csvRow[idx].replace(',', '.'))
                   );
                   cityObject.MIN = this._setAndFindMin(
                     cityObject.MIN,
-                    Number(csvRow[idx])
+                    Number(csvRow[idx].replace(',', '.'))
                   );
                 }
               }
@@ -89,6 +89,7 @@ export default class CSVParser {
         }
       })
       .on('done', () => {
+        console.log(customDataset)
         callback(customDataset);
       });
   }

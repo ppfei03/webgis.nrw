@@ -8,10 +8,18 @@ process.noDeprecation = true;
 
 module.exports = {
   context: path.join(__dirname, 'src'),
-  entry: ['whatwg-fetch', './index.js', './style/style.scss'],
+  entry: [
+    'jquery',
+    'jquery-ui',
+    'jquery-ui-css',
+    './index.js',
+    'whatwg-fetch',
+    './style/style.scss'
+  ],
   module: {
     noParse: /node_modules\/mapbox-gl\/dist\/mapbox-gl.js/,
     loaders: [
+      { test: /\.(jpe?g|png|gif)$/i, loader: 'file-loader' },
       {
         test: /\.jsx?$/,
         exclude: /(node_modules|bower_components)/,
@@ -49,9 +57,10 @@ module.exports = {
   plugins: [
     new ExtractTextPlugin({ filename: 'css/[name].min.css' }),
     new webpack.ProvidePlugin({
-      $: 'jquery/dist/jquery.slim.js',
-      jQuery: 'jquery/dist/jquery.slim.js',
-      'window.jQuery': 'jquery/dist/jquery.slim.js',
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': "jquery'",
+      'window.$': 'jquery',
       Popper: ['popper.js', 'default']
     }),
     new CopyWebpackPlugin([
@@ -68,5 +77,11 @@ module.exports = {
         to: `${__dirname}/dist/`
       }
     ])
-  ]
+  ],
+  resolve: {
+    alias: {
+      'jquery-ui': 'jquery-ui-dist/jquery-ui.js',
+      'jquery-ui-css': 'jquery-ui-dist/jquery-ui.css'
+    }
+  }
 };

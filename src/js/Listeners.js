@@ -82,6 +82,27 @@ export default class Listeners {
       this.getActiveMap().updateData(year);
     });
 
+    document.getElementById('my_dataviz').addEventListener('click', e => {
+      const target = $(e.target);
+      //console.log(target)
+      const dataKey = e.path[0].attributes[3].value;
+      let data;
+      if (target.hasClass('middle') && dataKey === 'Gewinner') {
+        console.log('middle');
+        data = true;
+        console.log(`your Data :`);
+        console.log(data);
+      } else {
+        console.log('outer');
+        data = false;
+      }
+
+      console.log(`your choice : ${dataKey}`);
+
+      // eslint-disable-next-line no-undef
+      this.getActiveMap().updateData(dataKey, data);
+    });
+
     document.getElementById('timeslide-play').addEventListener('click', () => {
       $('#timeslide-play').hide();
       $('#timeslide-pause').show();
@@ -142,9 +163,19 @@ export default class Listeners {
       this.getActiveMap().setData('population_data', 'population');
     });
 
+    document.getElementById('election_data').addEventListener('click', () => {
+      console.log('europawahl_2019');
+      $('#my_dataviz').show();
+      $('#timeslider').hide();
+
+      this.getActiveMap().setData('election_data_UTF8', 'europawahl_2019');
+    });
+
     document
       .getElementById('Anteil_Arbeitslose_UTF8')
       .addEventListener('click', () => {
+        $('#my_dataviz').hide();
+
         this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'arbeitslose');
       });
 
@@ -183,6 +214,14 @@ export default class Listeners {
           'Einbuergerungen_Auslaender'
         );
       });
+    document
+      .getElementById('schutzsuchende')
+      .addEventListener('click', () => {
+        this.getActiveMap().setData(
+          'Schutzsuchende_UTF8',
+          'Schutzsuchende'
+        );
+      });
 
     document.getElementById('KiTas').addEventListener('click', () => {
       if (this.getActiveMap().containsLayer('KiTasNRW')) {
@@ -209,7 +248,7 @@ export default class Listeners {
       this.getActiveMap().setPointColor($('#select_circle_color').val());
     });
 
-    document.getElementById('lowColor').addEventListener(
+    /**document.getElementById('lowColor').addEventListener(
       'change',
       e => {
         this.getActiveMap().changeColor('low', e.target.value);
@@ -221,6 +260,21 @@ export default class Listeners {
       'change',
       e => {
         this.getActiveMap().changeColor('high', e.target.value);
+      },
+      true
+    );          **/
+
+    document.getElementById('changeColor').addEventListener(
+      'click',
+      () => {
+        this.getActiveMap().changeColor(
+          'high',
+          document.getElementById('highColor').value
+        );
+        this.getActiveMap().changeColor(
+          'low',
+          document.getElementById('lowColor').value
+        );
       },
       true
     );
@@ -293,6 +347,12 @@ export default class Listeners {
     document.getElementById('logo').addEventListener('click', () => {
       location.reload();
     });
+
+    document.getElementById('clear').addEventListener('click', () => {
+      console.log(this.getActiveMap());
+      this.getActiveMap().loadData();
+    });
+
     // document.getElementById('Wahl17_SPD').addEventListener('click', () => {
     //     map.setData('Wahlergebnisse_CDU_1976_bis_2013', 'Wahl17_SPD');
     // });
