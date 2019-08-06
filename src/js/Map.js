@@ -1377,10 +1377,12 @@ export default class Map {
 
     switch (currentMaps) {
       case 1:
+        $('#map .homeButton').remove();
         zoomOutBtn = $('#map .mapboxgl-ctrl-zoom-out');
         homeButton = $('#map .mapboxgl-ctrl-zoom-out').clone();
         break;
       case 2:
+        $('#dual_map .homeButton').remove();
         zoomOutBtn = $('#dual_map .mapboxgl-ctrl-zoom-out');
         homeButton = $('#dual_map .mapboxgl-ctrl-zoom-out').clone();
         break;
@@ -1398,6 +1400,7 @@ export default class Map {
       });
     });
     homeButton.removeClass('mapboxgl-ctrl-zoom-out');
+    homeButton.addClass('homeButton');
     homeButton.append('<span class="material-icons">home</span>');
     homeButton.removeAttr('aria-label');
     zoomOutBtn.after(homeButton);
