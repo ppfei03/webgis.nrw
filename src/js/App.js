@@ -3,8 +3,8 @@ import Listeners from './Listeners.js';
 import syncMove from '@mapbox/mapbox-gl-sync-move';
 import MapboxCompare from 'mapbox-gl-compare';
 import 'mapbox-gl-compare/dist/mapbox-gl-compare.css';
-let primary_map
-let secondary_map
+export let primary_map
+export let secondary_map
 class App {
 
   static run() {
@@ -331,25 +331,9 @@ class App {
 
 
     });
-    function test12345(a,b) {
-
-    }
-  }
-
-  static test12345(point, param2) {
-
-    console.log('primary_map.feature_dataset.title')
-    console.log(primary_map.feature_dataset.title)
-    let primary_map_data =  primary_map.map.queryRenderedFeatures(point, param2)
-    console.log('primary_map_data[0].properties[secondary_map.feature_dataset.title]')
-    console.log(primary_map_data[0].properties[primary_map.feature_dataset.title])
-    let secondary_map_data =  secondary_map.map.queryRenderedFeatures(point, param2)
-    console.log('secondary_map.feature_dataset.title')
-    console.log(secondary_map.feature_dataset.title)
-    console.log('secondary_map_data[0].properties[secondary_map.feature_dataset.title]')
-    console.log(secondary_map_data[0].properties[secondary_map.feature_dataset.title])
 
   }
+
 }
 
 export default App;

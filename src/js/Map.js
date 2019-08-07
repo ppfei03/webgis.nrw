@@ -10,7 +10,8 @@ import Statistics from './Statistics.js';
 // const KreiseNRW_source = require('./../data/landkreise_simplify0.json');
 import { mapboxToken, wmsLayerUrls } from './../config.js';
 import CSVParser from './CSVParser.js';
-import App from './App';
+//import App from './App';
+import Legend from './Legend';
 
 let KreiseNRW;
 //let this.feature_dataset;
@@ -135,7 +136,7 @@ export default class Map {
           this._updatePipe(JSON.parse(states[0].properties.dataArray));
         }
 
-        App.test12345(e.point, {
+        Legend.test12345(e.point, {
           layers: ['kreisgrenzen']
         })
       });
@@ -201,10 +202,6 @@ export default class Map {
     // map.on('mouseleave', 'kreisgrenzen', function() {
     //   map.setFilter('kreis-border-hover', ['==', 'Gemeindename', '']);
     // });
-
-    this.featureDataset = this.feature_dataset;
-console.log(this.featureDataset)
-console.log(this.feature_dataset)
   }
 
   getMap() {
