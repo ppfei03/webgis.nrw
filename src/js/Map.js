@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 import 'whatwg-fetch';
 import * as d3 from 'd3';
-import geostats from 'geostats';
+//import geostats from 'geostats';
 
 import colorLerp from 'color-lerp';
 
@@ -10,9 +10,10 @@ import Statistics from './Statistics.js';
 // const KreiseNRW_source = require('./../data/landkreise_simplify0.json');
 import { mapboxToken, wmsLayerUrls } from './../config.js';
 import CSVParser from './CSVParser.js';
+import App from './App';
 
 let KreiseNRW;
-let feature_dataset;
+//let this.feature_dataset;
 let current_year;
 let current_legend = $('.scale-legend')[0];
 
@@ -122,7 +123,6 @@ export default class Map {
       // location of the feature, with description HTML from its properties.
       this.map.on('click', 'kreisgrenzen', e => {
         if (e.features.length > 0) {
-          console.log(e.features[0].properties);
           new mapboxgl.Popup()
             .setLngLat(e.lngLat)
             .setHTML(e.features[0].properties.Gemeindename)
@@ -134,6 +134,10 @@ export default class Map {
           });
           this._updatePipe(JSON.parse(states[0].properties.dataArray));
         }
+
+        App.test12345(e.point, {
+          layers: ['kreisgrenzen']
+        })
       });
 
       // Change the cursor to a pointer when the mouse is over the places layer.
@@ -164,16 +168,16 @@ export default class Map {
           if (states.length > 0) {
             let myString = '';
             if (
-              feature_dataset &&
-              states[0].properties[feature_dataset.title]
+              this.feature_dataset &&
+              states[0].properties[this.feature_dataset.title]
             ) {
               myString =
                 `<h4><strong>${
                   states[0].properties.Gemeindename
                 }</strong></h4>` +
                 `<p><strong><em>${
-                  states[0].properties[feature_dataset.title]
-                }</strong> ${feature_dataset.unit}</em></p>`;
+                  states[0].properties[this.feature_dataset.title]
+                }</strong> ${this.feature_dataset.unit}</em></p>`;
             } else {
               myString = `<h3><strong>${
                 states[0].properties.Gemeindename
@@ -197,6 +201,10 @@ export default class Map {
     // map.on('mouseleave', 'kreisgrenzen', function() {
     //   map.setFilter('kreis-border-hover', ['==', 'Gemeindename', '']);
     // });
+
+    this.featureDataset = this.feature_dataset;
+console.log(this.featureDataset)
+console.log(this.feature_dataset)
   }
 
   getMap() {
@@ -204,7 +212,7 @@ export default class Map {
   }
 
   getTitle() {
-    return feature_dataset.title;
+    return this.feature_dataset.title;
   }
 
   getYear() {
@@ -342,17 +350,17 @@ export default class Map {
       highColor = value;
     }
 
-    if (feature_dataset.title) {
+    if (this.feature_dataset.title) {
       if (this.map.getLayer('kreisgrenzen')) {
         this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
-          property: feature_dataset.title,
+          property: this.feature_dataset.title,
           stops: [
             [
-              this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
+              this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
               lowColor
             ],
             [
-              this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+              this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
               highColor
             ]
           ]
@@ -368,12 +376,12 @@ export default class Map {
 
     document.getElementById('legend-min').innerHTML = this._getMinFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MIN'
     );
     document.getElementById('legend-max').innerHTML = this._getMaxFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MAX'
     );
     document.getElementById(
@@ -411,7 +419,7 @@ export default class Map {
     //   .then(response => {
     //     response.json().then(_data => {
     //       /* eslint-enable global-require */
-    //       return this.feature_dataset.data(_data, feature);
+    //       return this.this.feature_dataset.data(_data, feature);
     //     });
     //   })
     //   .catch(ex => {
@@ -594,7 +602,7 @@ export default class Map {
     current_year = year;
     let maxDataKey = 0;
     KreiseNRW.features.map(kreis => {
-      feature_dataset.data.forEach(kreisPop => {
+      this.feature_dataset.data.forEach(kreisPop => {
         if (
           kreis.properties.Kreisnummer.slice(
             0,
@@ -606,9 +614,9 @@ export default class Map {
           }
           if (maxDataKey !== 0) {
             //console.log('Gewinner ist : ');
-            kreis.properties[feature_dataset.title] = maxDataKey;
+            kreis.properties[this.feature_dataset.title] = maxDataKey;
           } else {
-            kreis.properties[feature_dataset.title] = Number(
+            kreis.properties[this.feature_dataset.title] = Number(
               kreisPop.data[year]
             );
           }
@@ -639,21 +647,21 @@ export default class Map {
       });
 
       this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
-        property: feature_dataset.title,
+        property: this.feature_dataset.title,
         type: 'categorical',
         stops: stepColor
       });
     } else {
       this.map.getSource('KreiseNRW').setData(KreiseNRW);
       this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
-        property: feature_dataset.title,
+        property: this.feature_dataset.title,
         stops: [
           [
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
             lowColor
           ],
           [
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             highColor
           ]
         ]
@@ -664,12 +672,12 @@ export default class Map {
 
     document.getElementById('legend-min').innerHTML = this._getMinFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MIN'
     );
     document.getElementById('legend-max').innerHTML = this._getMaxFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MAX'
     );
   }
@@ -748,8 +756,8 @@ export default class Map {
         this._applyStatistic(
           Statistics.getEqualInterval(
             this._getData(),
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -758,8 +766,8 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassStdDeviation(
             this._getData(),
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -768,8 +776,8 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassArithmeticProgression(
             this._getData(),
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -778,8 +786,8 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassGeometricProgression(
             this._getData(),
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -788,8 +796,8 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassQuantile(
             this._getData(),
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -798,8 +806,8 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassJenks(
             this._getData(),
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -808,8 +816,8 @@ export default class Map {
         this._applyStatistic(
           Statistics.getUniqueValues(
             this._getData(),
-            this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
+            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             this._getData().length
           )
         );
@@ -819,14 +827,14 @@ export default class Map {
 
   _applyStandard() {
     this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
-      property: feature_dataset.title,
+      property: this.feature_dataset.title,
       stops: [
         [
-          this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
+          this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
           lowColor
         ],
         [
-          this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+          this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
           highColor
         ]
       ]
@@ -854,7 +862,7 @@ export default class Map {
       'hex'
     );
 
-    const stops = ['step', ['get', feature_dataset.title]];
+    const stops = ['step', ['get', this.feature_dataset.title]];
 
     $('.legend-labels').empty();
 
@@ -911,7 +919,7 @@ export default class Map {
    * @param {string} feature name of the feature e.g. arbeitslose
    */
   _setDataFromJSON(data) {
-    feature_dataset = data;
+    this.feature_dataset = data;
     // show json in new tab
     /**const win = window.open();
     win.document.write(
@@ -927,7 +935,7 @@ export default class Map {
 
     // map feature to layer
     KreiseNRW.features.map(kreis => {
-      feature_dataset.data.forEach(data_feature => {
+      this.feature_dataset.data.forEach(data_feature => {
         if (!String(data_feature.AGS).startsWith('0')) {
           data_feature.AGS = `0${data_feature.AGS}`;
         }
@@ -950,11 +958,11 @@ export default class Map {
       property: data.title,
       stops: [
         [
-          this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
+          this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
           lowColor
         ],
         [
-          this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+          this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
           highColor
         ]
       ]
@@ -964,18 +972,21 @@ export default class Map {
     // update ui elements
     document.getElementById('legend-min').innerHTML = this._getMinFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MIN'
     );
     document.getElementById('legend-max').innerHTML = this._getMaxFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MAX'
     );
 
      **/
 
-    document.getElementById('timeslider').removeAttribute('hidden');
+    //document.getElementById('timeslider').removeAttribute('hidden');
+    $('#timeslider').show();
+    $('#my_dataviz').hide();
+
     document.getElementById(
       'timeslide-min'
     ).innerHTML = this._getFirstYearOfDataset();
@@ -1005,7 +1016,9 @@ export default class Map {
    */
   _setElectionDataFromJSON(data) {
     console.log('_setElectionDataFromJSON');
-    feature_dataset = data;
+    this.feature_dataset = data;
+
+    //createAttribute
 
     // show json in new tab
     //const win = window.open();
@@ -1023,7 +1036,7 @@ export default class Map {
 
     // map feature to layer
     KreiseNRW.features.map(kreis => {
-      feature_dataset.data.forEach(data_feature => {
+      this.feature_dataset.data.forEach(data_feature => {
         if (!String(data_feature.AGS).startsWith('0')) {
           data_feature.AGS = `0${data_feature.AGS}`;
         }
@@ -1057,11 +1070,11 @@ export default class Map {
       property: data.title,
       stops: [
         [
-          this._getMinFeature(KreiseNRW, feature_dataset.title, 'MIN'),
+          this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
           lowColor
         ],
         [
-          this._getMaxFeature(KreiseNRW, feature_dataset.title, 'MAX'),
+          this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
           highColor
         ]
       ]
@@ -1070,12 +1083,12 @@ export default class Map {
     // update ui elements
     document.getElementById('legend-min').innerHTML = this._getMinFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MIN'
     );
     document.getElementById('legend-max').innerHTML = this._getMaxFeature(
       KreiseNRW,
-      feature_dataset.title,
+      this.feature_dataset.title,
       'MAX'
     );
 
@@ -1162,7 +1175,7 @@ export default class Map {
    * @returns years of current dataset
    */
   _getYearsOfDataset() {
-    return Object.keys(feature_dataset.data[0].data);
+    return Object.keys(this.feature_dataset.data[0].data);
   }
 
   /**
@@ -1170,7 +1183,7 @@ export default class Map {
    * @returns first year of current dataset
    */
   _getFirstYearOfDataset() {
-    return Object.keys(feature_dataset.data[0].data)[0];
+    return Object.keys(this.feature_dataset.data[0].data)[0];
   }
 
   /**
@@ -1178,7 +1191,7 @@ export default class Map {
    * @returns last year of current dataset
    */
   _getLastYearOfDataset() {
-    const dataset_data = Object.keys(feature_dataset.data[0].data);
+    const dataset_data = Object.keys(this.feature_dataset.data[0].data);
 
     return dataset_data[dataset_data.length - 1];
   }
@@ -1186,9 +1199,9 @@ export default class Map {
   _getData() {
     const temp = [];
     KreiseNRW.features.forEach(e => {
-      const val = e.properties[feature_dataset.title];
+      const val = e.properties[this.feature_dataset.title];
       if (val) {
-        temp.push(e.properties[feature_dataset.title]);
+        temp.push(e.properties[this.feature_dataset.title]);
       }
     });
 
@@ -1374,6 +1387,7 @@ export default class Map {
     // save the zoomOutBtn and create a homeButton
     let zoomOutBtn;
     let homeButton;
+
 
     switch (currentMaps) {
       case 1:

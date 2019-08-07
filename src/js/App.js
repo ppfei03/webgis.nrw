@@ -3,11 +3,13 @@ import Listeners from './Listeners.js';
 import syncMove from '@mapbox/mapbox-gl-sync-move';
 import MapboxCompare from 'mapbox-gl-compare';
 import 'mapbox-gl-compare/dist/mapbox-gl-compare.css';
-
+let primary_map
+let secondary_map
 class App {
+
   static run() {
     let listeners;
-    const primary_map = new Map('map', [7.555, 51.478333], 7, success => {
+    primary_map = new Map('map', [7.555, 51.478333], 7, success => {
       if (success) {
         document.body.style.visibility = 'visible';
 
@@ -35,7 +37,7 @@ class App {
       listeners = new Listeners(document, primary_map);
     });
 
-    let secondary_map;
+    //let secondary_map;
 
     let dualView = false;
     let splitView = false;
@@ -324,10 +326,29 @@ class App {
 
 
         if (key.which === 13){ //when click "Enter"
-          if(mouseAndClickRecord){
+          console.log(primary_map)
       }
-      }
+
+
     });
+    function test12345(a,b) {
+
+    }
+  }
+
+  static test12345(point, param2) {
+
+    console.log('primary_map.feature_dataset.title')
+    console.log(primary_map.feature_dataset.title)
+    let primary_map_data =  primary_map.map.queryRenderedFeatures(point, param2)
+    console.log('primary_map_data[0].properties[secondary_map.feature_dataset.title]')
+    console.log(primary_map_data[0].properties[primary_map.feature_dataset.title])
+    let secondary_map_data =  secondary_map.map.queryRenderedFeatures(point, param2)
+    console.log('secondary_map.feature_dataset.title')
+    console.log(secondary_map.feature_dataset.title)
+    console.log('secondary_map_data[0].properties[secondary_map.feature_dataset.title]')
+    console.log(secondary_map_data[0].properties[secondary_map.feature_dataset.title])
+
   }
 }
 
