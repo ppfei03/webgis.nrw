@@ -94,6 +94,8 @@ export default class Map {
 
     this._updatePipe(data1);
 
+    this.legende = new Legend();
+    this.legende.name = container;
     this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
     // Add home button (Small hack since Mapbox is not supporting this..)
@@ -138,7 +140,8 @@ export default class Map {
 
         Legend.test12345(e.point, {
           layers: ['kreisgrenzen']
-        })
+        });
+        this.legende.legendActivate();
       });
 
       // Change the cursor to a pointer when the mouse is over the places layer.
@@ -172,13 +175,22 @@ export default class Map {
               this.feature_dataset &&
               states[0].properties[this.feature_dataset.title]
             ) {
+              let unit;
+              if (
+                typeof states[0].properties[this.feature_dataset.title] ===
+                'string'
+              ) {
+                unit = '';
+              } else {
+                unit = this.feature_dataset.unit;
+              }
               myString =
                 `<h4><strong>${
                   states[0].properties.Gemeindename
                 }</strong></h4>` +
                 `<p><strong><em>${
                   states[0].properties[this.feature_dataset.title]
-                }</strong> ${this.feature_dataset.unit}</em></p>`;
+                }</strong> ${unit}</em></p>`;
             } else {
               myString = `<h3><strong>${
                 states[0].properties.Gemeindename
@@ -639,10 +651,14 @@ export default class Map {
       colors.forEach((dataInMap, i) => {
         const string = [];
         string.push(allDataInMap[i]);
-        string.push(dataInMap);
+        const findValue = allDataInMap[i];
+        const result = $(`path[name^=${findValue}]`).attr('fill');
+        string.push(result);
         stepColor.push(string);
       });
+      console.log(stepColor);
 
+      console.log();
       this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
         property: this.feature_dataset.title,
         type: 'categorical',
@@ -1016,7 +1032,6 @@ export default class Map {
     this.feature_dataset = data;
 
     //createAttribute
-
     // show json in new tab
     //const win = window.open();
     //win.document.write(
@@ -1352,8 +1367,13 @@ export default class Map {
       .style('text-anchor', 'middle')
       .style('font-size', 17);
 **/
-
-    const myString = `<p><strong>${d.data.key} : ${d.data.value}%</strong></p>`;
+    let myString;
+    if (typeof d.data.value === 'string') {
+      console.log('data is string');
+      myString = `<p><strong>${d.data.key}</strong></p>`;
+    } else {
+      myString = `<p><strong>${d.data.key} : ${d.data.value}%</strong></p>`;
+    }
 
     document.getElementById('infoPieChart').innerHTML = myString;
   }
@@ -1384,7 +1404,6 @@ export default class Map {
     // save the zoomOutBtn and create a homeButton
     let zoomOutBtn;
     let homeButton;
-
 
     switch (currentMaps) {
       case 1:

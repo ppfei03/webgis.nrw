@@ -88,17 +88,15 @@ export default class Listeners {
       const dataKey = e.path[0].attributes[3].value;
       let data;
       if (target.hasClass('middle') && dataKey === 'Gewinner') {
-        console.log('middle');
         data = true;
+        $('.scale-legend').hide()
         console.log(`your Data :`);
         console.log(data);
       } else {
-        console.log('outer');
+        $('.scale-legend').show()
         data = false;
       }
-
       console.log(`your choice : ${dataKey}`);
-
       // eslint-disable-next-line no-undef
       this.getActiveMap().updateData(dataKey, data);
     });
