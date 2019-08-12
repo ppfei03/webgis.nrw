@@ -10,7 +10,7 @@ import Statistics from './Statistics.js';
 // const KreiseNRW_source = require('./../data/landkreise_simplify0.json');
 import { mapboxToken, wmsLayerUrls } from './../config.js';
 import CSVParser from './CSVParser.js';
-//import App from './App';
+import App from './App';
 import Legend from './Legend';
 
 let KreiseNRW;
@@ -19,6 +19,8 @@ let current_year;
 let current_legend = $('.scale-legend')[0];
 
 let showLegendOnStart = false;
+
+export let allInstances = [];
 
 // min and max colors
 let lowColor = '#80BCFF';
@@ -83,6 +85,7 @@ export default class Map {
    * @param {function} loadDone callback function when load was successful
    */
   constructor(container, center, zoom, loadDone) {
+
     mapboxgl.accessToken = mapboxToken;
     this.map = new mapboxgl.Map({
       container: container,
@@ -91,7 +94,7 @@ export default class Map {
       style: 'mapbox://styles/mapbox/light-v9',
       preserveDrawingBuffer: true // to print map
     });
-
+    allInstances.push(this);
     this._updatePipe(data1);
 
     this.legende = new Legend();
@@ -185,10 +188,10 @@ export default class Map {
                 unit = this.feature_dataset.unit;
               }
               myString =
-                `<h4><strong>${
+                `<h4 class="col-md-12"><strong>${
                   states[0].properties.Gemeindename
                 }</strong></h4>` +
-                `<p><strong><em>${
+                `<p class="col-md-6"><strong><em>${
                   states[0].properties[this.feature_dataset.title]
                 }</strong> ${unit}</em></p>`;
             } else {
@@ -196,9 +199,18 @@ export default class Map {
                 states[0].properties.Gemeindename
               }</strong></h3>`;
             }
-            document.getElementById('pd').innerHTML = myString;
-            //const data1 = {a: 9, b: 20, c:30, d:8, e:12}
+            if (App.dualView || App.splitView) {
+              this.legende.legendForDualSplitView(e.point, {
+                layers: ['kreisgrenzen']
+              });
+            } else {
+              this.legende.legendForStandardView(e.point, {
+                layers: ['kreisgrenzen']
+              });
 
+              //const data1 = {a: 9, b: 20, c:30, d:8, e:12}
+              document.getElementById('pd').innerHTML = myString;
+            }
             if (states[0].properties.dataArray !== undefined) {
               if (this.getMoveOverViewSetting()) {
                 this._updatePipe(JSON.parse(states[0].properties.dataArray));
