@@ -5,6 +5,9 @@ import MapboxCompare from 'mapbox-gl-compare';
 import 'mapbox-gl-compare/dist/mapbox-gl-compare.css';
 export let primary_map
 export let secondary_map
+export let dualView = false;
+export let splitView = false;
+
 class App {
 
   static run() {
@@ -39,16 +42,15 @@ class App {
 
     //let secondary_map;
 
-    let dualView = false;
-    let splitView = false;
+
 
     // dual mode triggered
     $('#mode-dual').on('change', () => {
-      if (!dualView && $('#mode-dual').is(':checked')) {
-        if (splitView) {
+      if (!this.dualView && $('#mode-dual').is(':checked')) {
+        if (this.splitView) {
           $('#split_map').remove();
           $('.mapboxgl-compare').remove();
-          splitView = false;
+          this.splitView = false;
         }
         $('.webgis-view').after(
           '<div class="webgis-view-split" style="float: right; width:50vw;"><div id="dual_map" class="map"></div></div>'
@@ -74,17 +76,17 @@ class App {
           }
         });
 
-        dualView = true;
+        this.dualView = true;
       }
     });
 
     // split mode triggered
     $('#mode-split').on('change', () => {
-      if (!splitView && $('#mode-split').is(':checked')) {
-        if (dualView) {
+      if (!this.splitView && $('#mode-split').is(':checked')) {
+        if (this.dualView) {
           $('.webgis-view-split').remove();
           $('.webgis-view, #map').css('width', '100vw');
-          dualView = false;
+          this.dualView = false;
         }
         $('#map').after('<div id="split_map" class="map"></div>');
 
@@ -122,23 +124,23 @@ class App {
 
         listeners.setActiveMap(primary_map);
 
-        splitView = true;
+        this.splitView = true;
       }
     });
 
     // standard mode triggered
     $('#mode-standard').on('change', () => {
       if ($('#mode-standard').is(':checked')) {
-        if (dualView) {
+        if (this.dualView) {
           $('.webgis-view-split').remove();
           $('.webgis-view, #map').css('width', '100vw');
-          dualView = false;
+          this.dualView = false;
           $('#map').droppable({ disabled: false });
         }
-        if (splitView) {
+        if (this.splitView) {
           $('#split_map').remove();
           $('.mapboxgl-compare').remove();
-          splitView = false;
+          this.splitView = false;
           $('#map').droppable({ disabled: false });
         }
 
