@@ -181,32 +181,37 @@ class App {
     });
 
 
-
+    //$('.draggable').addClass('ui-widget-content')
     $('.draggable').draggable({
       //helper: 'clone',
       cancel: false,
       revert: true,
-      scroll: false,
-      containment: 'window',
+      //scroll: false,
+      //containment: 'window',
+      //stack:'body',
       start: function(ui) {
         addMouseCLick(ui.clientX, ui.clientY, ui.type, ui.target.id)
-
-        $('.scrollable-menu')
+/**
+        $('.scrollable-menu, .panel')
           .css('visibility', 'hidden')
           .css('overflow', 'visible');
         $(this).css('visibility', 'visible');
         if ($('.navbar-toggler').attr('aria-expanded') === 'true') {
           $('nav').css('visibility', 'hidden');
         }
+
+**/
+
       },
       stop: function(ui) {
         addMouseCLick(ui.clientX, ui.clientY, ui.type, ui.target.id)
-
-        $('.scrollable-menu')
+/**
+        $('.scrollable-menu, .panel')
           .css('overflow', '')
           .css('visibility', '');
         $(this).css('visibility', '');
         $('nav').css('visibility', '');
+ **/
       }
     });
 
@@ -331,6 +336,26 @@ class App {
 
 
     });
+
+
+
+    let acc = document.getElementsByClassName("accordion"),
+     i;
+
+    for (i = 0; i < acc.length; i++) {
+      acc[i].addEventListener("click", function() {
+        //this.classList.toggle("active");
+        let panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+          $(".panel").hide()
+          panel.style.display = "none";
+        } else {
+          $(".panel").hide()
+          panel.style.display = "block";
+        }
+      });
+    }
+
 
   }
 

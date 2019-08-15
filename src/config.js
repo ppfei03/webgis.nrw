@@ -6,7 +6,7 @@ module.exports = {
       'http://sgx.geodatenzentrum.de/wms_topplus_web_open?bbox={bbox-epsg-3857}&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&width=256&height=256&layers=web_grau&styles=default&format=image/png'
     ],
     dop: [
-      'https://www.wms.nrw.de/geobasis/wms_nw_dop20?bbox={bbox-epsg-3857}&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&width=256&height=256&layers=nw_dop20&styles=default&format=image/png'
+      'https://www.wms.nrw.de/geobasis/wms_nw_dop?bbox={bbox-epsg-3857}&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&width=256&height=256&layers=wms_nw_dop&styles=default&format=image/png'
     ],
     dop_overlay: [
       'https://www.wms.nrw.de/geobasis/wms_nw_dop_overlay?bbox={bbox-epsg-3857}&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&width=256&height=256&layers=WMS_NW_DOP_OVERLAY&styles=default&format=image/png'
