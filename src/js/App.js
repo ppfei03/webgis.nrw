@@ -32,6 +32,7 @@ class App {
 
       $('#map').droppable({
         drop: function(event, ui) {
+          alert('Drop to map 1')
           listeners.setActiveMap(primary_map);
           $(`#${ui.draggable[0].id}`).click();
         }
@@ -71,6 +72,8 @@ class App {
 
         $('#dual_map').droppable({
           drop: function(event, ui) {
+            alert('Drop to dual_map')
+
             listeners.setActiveMap(secondary_map);
             $(`#${ui.draggable[0].id}`).click();
           }
@@ -104,6 +107,8 @@ class App {
 
         $('#split_map').droppable({
           drop: function(event, ui) {
+            alert('Drop to split_map')
+
             /**
              * Test on which side the button was dragged.
              * Find the slide position and compare it with the movable position (offset upper left corner) +
