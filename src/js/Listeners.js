@@ -172,6 +172,7 @@ export default class Listeners {
     document
       .getElementById('Anteil_Arbeitslose_UTF8')
       .addEventListener('click', () => {
+        alert('Click Arbeitslose')
         $('#my_dataviz').hide();
 
         this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'arbeitslose');
@@ -375,6 +376,7 @@ export default class Listeners {
   }
 
   setActiveMap(map) {
+    alert('aktiviere: ' + map)
     activeMap = map;
 
     try {
