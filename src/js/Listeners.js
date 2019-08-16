@@ -169,14 +169,21 @@ export default class Listeners {
       this.getActiveMap().setData('election_data_UTF8', 'europawahl_2019');
     });
 
-    document
+    /*document
       .getElementById('Anteil_Arbeitslose_UTF8')
       .addEventListener('click', () => {
         alert('Click Arbeitslose')
         $('#my_dataviz').hide();
 
         this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'arbeitslose');
-      });
+      });*/
+
+    $('#Anteil_Arbeitslose_UTF8').bind('click', function() {
+      alert('Click Arbeitslose jquery')
+      $('#my_dataviz').hide();
+
+      this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'arbeitslose');
+    });
 
     document
       .getElementById('Erwerbstaetige_Dienstleistung')
