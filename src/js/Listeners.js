@@ -89,11 +89,11 @@ export default class Listeners {
       let data;
       if (target.hasClass('middle') && dataKey === 'Gewinner') {
         data = true;
-        $('.scale-legend').hide()
+        $('.scale-legend').hide();
         console.log(`your Data :`);
         console.log(data);
       } else {
-        $('.scale-legend').show()
+        $('.scale-legend').show();
         data = false;
       }
       console.log(`your choice : ${dataKey}`);
@@ -169,21 +169,14 @@ export default class Listeners {
       this.getActiveMap().setData('election_data_UTF8', 'europawahl_2019');
     });
 
-    /*document
+    document
       .getElementById('Anteil_Arbeitslose_UTF8')
       .addEventListener('click', () => {
-        alert('Click Arbeitslose')
+        //alert('Click Arbeitslose');
         $('#my_dataviz').hide();
 
         this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'arbeitslose');
-      });*/
-
-    $('#Anteil_Arbeitslose_UTF8').bind('click', function() {
-      alert('Click Arbeitslose jquery')
-      $('#my_dataviz').hide();
-
-      this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'arbeitslose');
-    });
+      });
 
     document
       .getElementById('Erwerbstaetige_Dienstleistung')
@@ -220,14 +213,9 @@ export default class Listeners {
           'Einbuergerungen_Auslaender'
         );
       });
-    document
-      .getElementById('schutzsuchende')
-      .addEventListener('click', () => {
-        this.getActiveMap().setData(
-          'Schutzsuchende_UTF8',
-          'Schutzsuchende'
-        );
-      });
+    document.getElementById('schutzsuchende').addEventListener('click', () => {
+      this.getActiveMap().setData('Schutzsuchende_UTF8', 'Schutzsuchende');
+    });
 
     document.getElementById('KiTas').addEventListener('click', () => {
       if (this.getActiveMap().containsLayer('KiTasNRW')) {
@@ -383,7 +371,7 @@ export default class Listeners {
   }
 
   setActiveMap(map) {
-    alert('aktiviere: ' + map)
+    //alert('aktiviere: ' + map)
     activeMap = map;
 
     try {

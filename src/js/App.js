@@ -32,9 +32,19 @@ class App {
 
       $('#map').droppable({
         drop: function(event, ui) {
-          alert('Drop to map 1')
+          //alert('Drop to map 1')
           listeners.setActiveMap(primary_map);
-          $(`#${ui.draggable[0].id}`).click();
+          //alert(ui.draggable[0].id)
+
+          try{
+            //alert($(`#${ui.draggable[0].id}`).click())
+            $(`#${ui.draggable[0].id}`).click()
+            $(`#${ui.draggable[0].id}`).click()
+          }catch(error){
+            console.log(error)
+            alert(error)
+
+          }
         }
       });
 
@@ -72,7 +82,7 @@ class App {
 
         $('#dual_map').droppable({
           drop: function(event, ui) {
-            alert('Drop to dual_map')
+            //alert('Drop to dual_map')
 
             listeners.setActiveMap(secondary_map);
             $(`#${ui.draggable[0].id}`).click();
@@ -107,7 +117,7 @@ class App {
 
         $('#split_map').droppable({
           drop: function(event, ui) {
-            alert('Drop to split_map')
+           // alert('Drop to split_map')
 
             /**
              * Test on which side the button was dragged.
