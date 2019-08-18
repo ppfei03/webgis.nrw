@@ -57,7 +57,7 @@ export default class CSVParser {
             data: {}
           };
           header.forEach((element, idx) => {
-            if (!isNaN(Number(element)) && element !== '') {
+            if (!isNaN(Number(element)) && element !== ''&& element !== '-') {
               cityObject.data[`${element}`] = csvRow[idx].replace(',', '.');
               // eslint-disable-next-line no-undef
               cityObject.MAX = this._setAndFindMax(

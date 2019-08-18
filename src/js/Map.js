@@ -139,8 +139,6 @@ export default class Map {
           });
           this._updatePipe(JSON.parse(states[0].properties.dataArray));
         }
-
-
       });
 
       // Change the cursor to a pointer when the mouse is over the places layer.
@@ -305,6 +303,7 @@ export default class Map {
   changeStyle(style) {
     const layers = Object.keys(wmsLayerUrls);
     if (layers.includes(style)) {
+      console.log(this.map.getLayer(style));
       if (!this.map.getLayer(style)) {
         this.map.addLayer(
           {
@@ -324,11 +323,14 @@ export default class Map {
       }
       layers.splice(layers.findIndex(l => l === style), 1);
     } else if (style === 'empty') {
-      this.map.setStyle('mapbox://styles/felixaetem/cjdncto7a081u2qsbfwe2750v');
+      this.map.setStyle(
+        'mapbox://styles/felixaetem/cjdncto7a081u2qsbfwe2750v'
+      );
     } else {
-      this.map.setStyle(`mapbox://styles/mapbox/${style}-v9`);
+      console.log(this.map.getLayer('kreisgrenzen'))
+      this.map.setStyle(`mapbox://styles/mapbox/${style}-v9`)
+      console.log(this.map.getLayer('kreisgrenzen'))
     }
-
     for (const l of layers) {
       if (this.map.getLayer(l)) {
         this.map.setLayoutProperty(l, 'visibility', 'none');
@@ -421,10 +423,10 @@ export default class Map {
 
     /* eslint-disable global-require */
     const _data = require(`./../data/${data_source}.json`);
-    console.log('_data');
-    console.log(_data);
-    console.log('_data.unit');
-    console.log(_data.unit);
+    //console.log('_data');
+    //console.log(_data);
+    //console.log('_data.unit');
+    //console.log(_data.unit);
     if (_data.title === 'Europawahl') {
       //_data.unit = '%';
       this._setElectionDataFromJSON(_data);

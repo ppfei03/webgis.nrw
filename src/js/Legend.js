@@ -10,8 +10,8 @@ class Legend {
 
 
   legendForDualSplitView(point, param2){
-      console.log(allInstances)
-
+      //console.log(allInstances)
+    try{
       const primary_map_data = primary_map.map.queryRenderedFeatures(
           point,
           param2
@@ -47,14 +47,16 @@ class Legend {
               }</strong> ${unit}</em></p>`;
 
       document.getElementById('pd').innerHTML = myString;
-
+  }catch(error){}
 
   }
 
   legendForStandardView(point, param2){
-      console.log(this)
-      console.log(allInstances)
-    $('#legend-heading').html(primary_map.feature_dataset.title)
+      //console.log(this)
+      //console.log(allInstances)
+    try{
+      $('#legend-heading').html(primary_map.feature_dataset.title)
+
       const primary_map_data = primary_map.map.queryRenderedFeatures(
           point,
           param2
@@ -80,7 +82,7 @@ class Legend {
               }</strong> ${unit}</em></p>`;
 
       document.getElementById('pd').innerHTML = myString;
-
+    }catch(error){}
   }
   static test12345(point, param2) {
     try {
