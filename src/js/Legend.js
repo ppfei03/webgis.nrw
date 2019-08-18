@@ -54,7 +54,7 @@ class Legend {
   legendForStandardView(point, param2){
       console.log(this)
       console.log(allInstances)
-
+    $('#legend-heading').html(primary_map.feature_dataset.title)
       const primary_map_data = primary_map.map.queryRenderedFeatures(
           point,
           param2

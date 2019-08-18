@@ -20,7 +20,7 @@ let current_legend = $('.scale-legend')[0];
 
 let showLegendOnStart = false;
 
-export let allInstances = [];
+export const allInstances = [];
 
 // min and max colors
 let lowColor = '#80BCFF';
@@ -85,7 +85,6 @@ export default class Map {
    * @param {function} loadDone callback function when load was successful
    */
   constructor(container, center, zoom, loadDone) {
-
     mapboxgl.accessToken = mapboxToken;
     this.map = new mapboxgl.Map({
       container: container,
@@ -141,10 +140,7 @@ export default class Map {
           this._updatePipe(JSON.parse(states[0].properties.dataArray));
         }
 
-        Legend.test12345(e.point, {
-          layers: ['kreisgrenzen']
-        });
-        this.legende.legendActivate();
+
       });
 
       // Change the cursor to a pointer when the mouse is over the places layer.
@@ -715,6 +711,10 @@ export default class Map {
     if (file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') {
       const parser = new CSVParser();
       parser.getAsText(file, data => {
+        const win = window.open();
+        win.document.write(
+          decodeURIComponent(encodeURIComponent(JSON.stringify(data)))
+        );
         if (data.unit === 'wahlen') {
           this._setElectionDataFromJSON(data, file.name);
           //data.unit = '%';
