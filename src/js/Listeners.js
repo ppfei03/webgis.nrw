@@ -27,6 +27,9 @@ export default class Listeners {
     document.getElementById('topMap').addEventListener('click', () => {
       this.getActiveMap().changeStyle('top');
     });
+    document.getElementById('dopMap').addEventListener('click', () => {
+      this.getActiveMap().changeStyle('dop');
+    });
 
     document.getElementById('dtkMap').addEventListener('click', () => {
       this.getActiveMap().changeStyle('dtk');
