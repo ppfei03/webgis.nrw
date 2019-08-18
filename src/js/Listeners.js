@@ -175,7 +175,18 @@ export default class Listeners {
         //alert('Click Arbeitslose');
         $('#my_dataviz').hide();
 
-        this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'arbeitslose');
+        this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'Arbeitslose');
+      });
+    document
+      .getElementById('Primaereinkommen_Einwohner_UTF8')
+      .addEventListener('click', () => {
+        //alert('Click Arbeitslose');
+        $('#my_dataviz').hide();
+
+        this.getActiveMap().setData(
+          'Primaereinkommen_Einwohner_UTF8',
+          'Primaereinkommen_Einwohner'
+        );
       });
 
     document
