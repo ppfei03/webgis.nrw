@@ -4,19 +4,10 @@ import { allInstances } from './Map';
 class Legend {
   static name;
   static feature_dataset;
-  constructor() {}
+  constructor() {
+
+  }
   legendActivate() {
-console.log('name')
-console.log(name)
-console.log('this.name')
-console.log(this.name)
-    /**if($("#" + this.name).length == 0) {
-      //it doesn't exist
-          $('#legend-heading').append('<h3 id=\''+this.name+'\' ' +
-          'class=\'legend-title editable\'>Titel deiner Karte</h3>')
-    }else{
-      $("#demo").empty();
-    }**/
       $('#legend-heading').html(this.feature_dataset.title)
   }
 
@@ -43,7 +34,7 @@ console.log(this.name)
         unit1 = '';
       } else {
           unit1 = primary_map.feature_dataset.unit;
-      }legend
+      }
       if (
           typeof secondary_map_data[0].properties[secondary_map.feature_dataset.title] ===
           'string'

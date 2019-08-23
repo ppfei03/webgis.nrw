@@ -932,7 +932,9 @@ export default class Map {
    */
   _setDataFromJSON(data) {
     this.legende.feature_dataset = data;
+    this.legende.legendActivate();
     this.feature_dataset = data;
+
     // show json in new tab
     /**const win = window.open();
     win.document.write(
@@ -969,34 +971,6 @@ export default class Map {
 
     // apply styling
     this.map.getSource('KreiseNRW').setData(KreiseNRW);
-    /**this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
-      property: data.title,
-      stops: [
-        [
-          this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-          lowColor
-        ],
-        [
-          this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
-          highColor
-        ]
-      ]
-    });
-
-
-    // update ui elements
-    document.getElementById('legend-min').innerHTML = this._getMinFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MIN'
-    );
-    document.getElementById('legend-max').innerHTML = this._getMaxFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MAX'
-    );
-
-     **/
 
     //document.getElementById('timeslider').removeAttribute('hidden');
 
@@ -1209,14 +1183,37 @@ export default class Map {
     return dataset_data[dataset_data.length - 1];
   }
 
-  _getData() {
+  _getAllData() {
     const temp = [];
-    KreiseNRW.features.forEach(e => {
-      const val = e.properties[this.feature_dataset.title];
-      if (val) {
-        temp.push(e.properties[this.feature_dataset.title]);
+//console.log(this.feature_dataset.data)
+    this.feature_dataset.data.forEach(kreisAllData => {
+      //console.log(kreisAllData.data)
+      for (let k in kreisAllData.data) {
+
+          if(!isNaN(kreisAllData.data[k])){temp.push(kreisAllData.data[k])}else{console.log(kreisAllData.data[k])}
+
+
       }
     });
+
+    return temp;
+  }
+
+  _getData() {
+    let temp = [];
+
+    if(this.getMinMaxSetting()){
+      temp = this._getAllData();
+    }else{
+      KreiseNRW.features.forEach(e => {
+        const val = e.properties[this.feature_dataset.title];
+        if (val) {
+          temp.push(e.properties[this.feature_dataset.title]);
+        }
+      });
+
+    }
+    console.log(temp)
 
     return temp;
   }
