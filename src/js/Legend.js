@@ -3,9 +3,21 @@ import { allInstances } from './Map';
 
 class Legend {
   static name;
+  static feature_dataset;
   constructor() {}
   legendActivate() {
-    $('#legend-heading').html(this.name)
+console.log('name')
+console.log(name)
+console.log('this.name')
+console.log(this.name)
+    /**if($("#" + this.name).length == 0) {
+      //it doesn't exist
+          $('#legend-heading').append('<h3 id=\''+this.name+'\' ' +
+          'class=\'legend-title editable\'>Titel deiner Karte</h3>')
+    }else{
+      $("#demo").empty();
+    }**/
+      $('#legend-heading').html(this.feature_dataset.title)
   }
 
 
@@ -22,14 +34,23 @@ class Legend {
       );
 
 
-      let unit;
+      let unit1;
+      let unit2;
       if (
           typeof primary_map_data[0].properties[primary_map.feature_dataset.title] ===
           'string'
       ) {
-          unit = '';
+        unit1 = '';
       } else {
-          unit = primary_map.feature_dataset.unit;
+          unit1 = primary_map.feature_dataset.unit;
+      }legend
+      if (
+          typeof secondary_map_data[0].properties[secondary_map.feature_dataset.title] ===
+          'string'
+      ) {
+        unit2 = '';
+      } else {
+          unit2 = secondary_map.feature_dataset.unit;
       }
 
 
@@ -40,14 +61,16 @@ class Legend {
           `<p class="col-md-6">links : <strong><em>${
               primary_map_data[0].properties[primary_map.feature_dataset.title]
 
-              }</strong> ${unit}</em></p>`+
+              }</strong> ${unit1}</em></p>`+
           `<p class="col-md-6">rechts : <strong><em>${
               secondary_map_data[0].properties[secondary_map.feature_dataset.title]
 
-              }</strong> ${unit}</em></p>`;
+              }</strong> ${unit2}</em></p>`;
 
       document.getElementById('pd').innerHTML = myString;
-  }catch(error){}
+  }catch(error){
+      console.log(error)
+    }
 
   }
 
@@ -55,7 +78,7 @@ class Legend {
       //console.log(this)
       //console.log(allInstances)
     try{
-      $('#legend-heading').html(primary_map.feature_dataset.title)
+      //$('#legend-heading').html(primary_map.feature_dataset.title)
 
       const primary_map_data = primary_map.map.queryRenderedFeatures(
           point,
@@ -82,7 +105,10 @@ class Legend {
               }</strong> ${unit}</em></p>`;
 
       document.getElementById('pd').innerHTML = myString;
-    }catch(error){}
+    }catch(error){
+      console.log(error)
+
+    }
   }
   static test12345(point, param2) {
     try {

@@ -33,8 +33,8 @@ const statistics_state = {
 };
 
 // set the dimensions and margins of the graph
-const width = 350,
-  height = 350,
+const width = 370,
+  height = 370,
   margin = 40;
 
 // The radius of the pieplot is half the width or half the height (smallest one). I substract a bit of margin.
@@ -97,7 +97,9 @@ export default class Map {
     this._updatePipe(data1);
 
     this.legende = new Legend();
-    this.legende.name = container;
+    this.legende.name = `${container}LegendHeader`;
+    //this.legende.parent = this.name;
+
     this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
     // Add home button (Small hack since Mapbox is not supporting this..)
@@ -127,6 +129,8 @@ export default class Map {
       // When a click event occurs on a feature in the places layer, open a popup at the
       // location of the feature, with description HTML from its properties.
       this.map.on('click', 'kreisgrenzen', e => {
+        console.log(this);
+        console.log(this.name);
         if (e.features.length > 0) {
           new mapboxgl.Popup()
             .setLngLat(e.lngLat)
@@ -134,6 +138,17 @@ export default class Map {
             .addTo(this.map);
         }
         if (!this.getMoveOverViewSetting()) {
+          if (App.dualView || App.splitView) {
+            this.legende.legendActivate();
+            this.legende.legendForDualSplitView(e.point, {
+              layers: ['kreisgrenzen']
+            });
+          } else {
+            this.legende.legendActivate();
+            this.legende.legendForStandardView(e.point, {
+              layers: ['kreisgrenzen']
+            });
+          }
           const states = this.map.queryRenderedFeatures(e.point, {
             layers: ['kreisgrenzen']
           });
@@ -159,60 +174,32 @@ export default class Map {
       // show current Kreis on legend overlay
       this.map.on('mousemove', e => {
         //console.log(e)
+        if (this.getMoveOverViewSetting()) {
+          //this.map.on('click', e => {
+          if (this.map.getLayer('kreisgrenzen')) {
+            const states = this.map.queryRenderedFeatures(e.point, {
+              layers: ['kreisgrenzen']
+            });
 
-        //this.map.on('click', e => {
-        if (this.map.getLayer('kreisgrenzen')) {
-          const states = this.map.queryRenderedFeatures(e.point, {
-            layers: ['kreisgrenzen']
-          });
-
-          if (states.length > 0) {
-            let myString = '';
-            if (
-              this.feature_dataset &&
-              states[0].properties[this.feature_dataset.title]
-            ) {
-              let unit;
-              if (
-                typeof states[0].properties[this.feature_dataset.title] ===
-                'string'
-              ) {
-                unit = '';
+            if (states.length > 0) {
+              if (App.dualView || App.splitView) {
+                this.legende.legendActivate();
+                this.legende.legendForDualSplitView(e.point, {
+                  layers: ['kreisgrenzen']
+                });
               } else {
-                unit = this.feature_dataset.unit;
+                this.legende.legendActivate();
+                this.legende.legendForStandardView(e.point, {
+                  layers: ['kreisgrenzen']
+                });
               }
-              myString =
-                `<h4 class="col-md-12"><strong>${
-                  states[0].properties.Gemeindename
-                }</strong></h4>` +
-                `<p class="col-md-6"><strong><em>${
-                  states[0].properties[this.feature_dataset.title]
-                }</strong> ${unit}</em></p>`;
-            } else {
-              myString = `<h3><strong>${
-                states[0].properties.Gemeindename
-              }</strong></h3>`;
-            }
-            if (App.dualView || App.splitView) {
-              this.legende.legendForDualSplitView(e.point, {
-                layers: ['kreisgrenzen']
-              });
-            } else {
-              this.legende.legendForStandardView(e.point, {
-                layers: ['kreisgrenzen']
-              });
-
-              //const data1 = {a: 9, b: 20, c:30, d:8, e:12}
-              document.getElementById('pd').innerHTML = myString;
-            }
-            if (states[0].properties.dataArray !== undefined) {
-              if (this.getMoveOverViewSetting()) {
+              if (states[0].properties.dataArray !== undefined) {
                 this._updatePipe(JSON.parse(states[0].properties.dataArray));
               }
+            } else {
+              document.getElementById('pd').innerHTML =
+                '<p class="col-md-12">Bewege die Maus über die Kreise</p>';
             }
-          } else {
-            document.getElementById('pd').innerHTML =
-              '<p>Bewege die Maus über die Kreise</p>';
           }
         }
       });
@@ -235,10 +222,10 @@ export default class Map {
   }
 
   getMinMaxSetting() {
-    return document.getElementById('checkbox1').checked;
+    return document.getElementById('border_data').checked;
   }
   getMoveOverViewSetting() {
-    return document.getElementById('checkbox2').checked;
+    return document.getElementById('auto_change').checked;
   }
 
   /**
@@ -273,8 +260,8 @@ export default class Map {
       source: 'KreiseNRW',
       paint: {
         'fill-opacity': 0.8,
-        'fill-color': '#5266B8',
-        'fill-outline-color': '#5266B8'
+        'fill-color': '#c7c1c7',
+        'fill-outline-color': '#c7c1c7'
       }
     });
     try {
@@ -323,13 +310,11 @@ export default class Map {
       }
       layers.splice(layers.findIndex(l => l === style), 1);
     } else if (style === 'empty') {
-      this.map.setStyle(
-        'mapbox://styles/felixaetem/cjdncto7a081u2qsbfwe2750v'
-      );
+      this.map.setStyle('mapbox://styles/felixaetem/cjdncto7a081u2qsbfwe2750v');
     } else {
-      console.log(this.map.getLayer('kreisgrenzen'))
-      this.map.setStyle(`mapbox://styles/mapbox/${style}-v9`)
-      console.log(this.map.getLayer('kreisgrenzen'))
+      console.log(this.map.getLayer('kreisgrenzen'));
+      this.map.setStyle(`mapbox://styles/mapbox/${style}-v9`);
+      console.log(this.map.getLayer('kreisgrenzen'));
     }
     for (const l of layers) {
       if (this.map.getLayer(l)) {
@@ -946,6 +931,7 @@ export default class Map {
    * @param {string} feature name of the feature e.g. arbeitslose
    */
   _setDataFromJSON(data) {
+    this.legende.feature_dataset = data;
     this.feature_dataset = data;
     // show json in new tab
     /**const win = window.open();
@@ -953,8 +939,10 @@ export default class Map {
       decodeURIComponent(encodeURIComponent(JSON.stringify(data)))
     );**/
 
-    document.getElementById('legend-heading').innerHTML = data.title;
+    //document.getElementById('legend-heading').innerHTML = data.title;
     $('#my_dataviz').hide();
+    $('#timeslider, #border_option').show();
+
 
     $('.legend').each(function() {
       $(this).removeClass('legendWithPieChart');
@@ -1011,8 +999,6 @@ export default class Map {
      **/
 
     //document.getElementById('timeslider').removeAttribute('hidden');
-    $('#timeslider').show();
-    $('#my_dataviz').hide();
 
     document.getElementById(
       'timeslide-min'
@@ -1043,6 +1029,7 @@ export default class Map {
    */
   _setElectionDataFromJSON(data) {
     console.log('_setElectionDataFromJSON');
+    this.legende.feature_dataset = data;
     this.feature_dataset = data;
 
     //createAttribute
@@ -1052,9 +1039,9 @@ export default class Map {
     //  decodeURIComponent(encodeURIComponent(JSON.stringify(data)))
     //);
 
-    document.getElementById('legend-heading').innerHTML = data.title;
+    //document.getElementById('legend-heading').innerHTML = data.title;
     $('#my_dataviz').show();
-    $('#timeslider').hide();
+    $('#timeslider, #border_option').hide();
 
     $('.legend').each(function() {
       $(this).addClass('legendWithPieChart');

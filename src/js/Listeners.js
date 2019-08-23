@@ -161,19 +161,15 @@ export default class Listeners {
 
     document.getElementById('population_data').addEventListener('click', () => {
       console.log('pop');
-      $('#my_dataviz').hide();
       this.getActiveMap().setData('population_data', 'population');
     });
     document.getElementById('Einwohner_Quadratkilometer_UTF8').addEventListener('click', () => {
       console.log('Einwohner_Quadratkilometer_UTF8');
-      $('#my_dataviz').hide();
       this.getActiveMap().setData('Einwohner_Quadratkilometer_UTF8', 'Einwohner je Quadratkilometer');
     });
 
     document.getElementById('election_data').addEventListener('click', () => {
       console.log('europawahl_2019');
-      $('#my_dataviz').show();
-      $('#timeslider').hide();
 
       this.getActiveMap().setData('election_data_UTF8', 'europawahl_2019');
     });
@@ -182,7 +178,6 @@ export default class Listeners {
       .getElementById('Anteil_Arbeitslose_UTF8')
       .addEventListener('click', () => {
         //alert('Click Arbeitslose');
-        $('#my_dataviz').hide();
 
         this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'Arbeitslose');
       });
@@ -190,8 +185,6 @@ export default class Listeners {
       .getElementById('Primaereinkommen_Einwohner_UTF8')
       .addEventListener('click', () => {
         //alert('Click Arbeitslose');
-        $('#my_dataviz').show();
-        $('#timeslider').hide();
 
         this.getActiveMap().setData(
           'Primaereinkommen_Einwohner_UTF8',

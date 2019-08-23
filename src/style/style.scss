@@ -81,8 +81,12 @@ input[type=color] {
 .btn-outline-primary {
     white-space: unset !important;
 }
-
-
+.option-menue{
+  margin: 8px 0
+}
+.option-menue .btn-group{
+  margin-left: 10px;
+}
 
 
 .scrollable-menu .btn-outline-primary{

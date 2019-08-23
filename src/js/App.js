@@ -13,6 +13,7 @@ class App {
   static run() {
     let listeners;
     primary_map = new Map('map', [7.555, 51.478333], 7, success => {
+        primary_map.name = 'primary_map';
       if (success) {
         document.body.style.visibility = 'visible';
 
@@ -69,6 +70,7 @@ class App {
         $('.webgis-view, #map').css('width', '50vw');
 
         secondary_map = new Map('dual_map', [7.555, 51.478333], 7, success => {
+            secondary_map.name = 'secondary_map';
           if (success) {
             secondary_map.center();
             primary_map.center();
@@ -104,7 +106,9 @@ class App {
         $('#map').after('<div id="split_map" class="map"></div>');
 
         secondary_map = new Map('split_map', [7.555, 51.478333], 7, success => {
-          if (success) {
+            secondary_map.name = 'secondary_map';
+
+            if (success) {
             secondary_map.center();
             primary_map.center();
           }
