@@ -65,8 +65,8 @@ module.exports = {
     }),
     new CopyWebpackPlugin([
       {
-        from: `${__dirname}/src/data/KiTas_NRW.json`,
-        to: `${__dirname}/dist/`
+        from: `${__dirname}/src/tableExample`,
+        to: `${__dirname}/dist/tableExample`
       },
       {
         from: `${__dirname}/src/index.html`,

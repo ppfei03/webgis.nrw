@@ -163,10 +163,15 @@ export default class Listeners {
       console.log('pop');
       this.getActiveMap().setData('population_data', 'population');
     });
-    document.getElementById('Einwohner_Quadratkilometer_UTF8').addEventListener('click', () => {
-      console.log('Einwohner_Quadratkilometer_UTF8');
-      this.getActiveMap().setData('Einwohner_Quadratkilometer_UTF8', 'Einwohner je Quadratkilometer');
-    });
+    document
+      .getElementById('Einwohner_Quadratkilometer_UTF8')
+      .addEventListener('click', () => {
+        console.log('Einwohner_Quadratkilometer_UTF8');
+        this.getActiveMap().setData(
+          'Einwohner_Quadratkilometer_UTF8',
+          'Einwohner je Quadratkilometer'
+        );
+      });
 
     document.getElementById('election_data').addEventListener('click', () => {
       console.log('europawahl_2019');
@@ -339,9 +344,17 @@ export default class Listeners {
 
     document.getElementById('print').addEventListener('click', () => {
       const mapPrinter = new Printer(activeMap);
-      if ($('#export_pdf').is(':checked')) {
+      if (
+        $('#export_pdf')
+          .parent()
+          .hasClass('active')
+      ) {
         mapPrinter.generatePDF();
-      } else if ($('#export_png').is(':checked')) {
+      } else if (
+        $('#export_png')
+          .parent()
+          .hasClass('active')
+      ) {
         mapPrinter.generatePNG();
       }
     });

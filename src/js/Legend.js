@@ -6,6 +6,7 @@ class Legend {
   static feature_dataset;
   constructor() {
 
+
   }
   legendActivate() {
       $('#legend-heading').html(this.feature_dataset.title)

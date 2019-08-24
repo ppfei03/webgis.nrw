@@ -222,10 +222,10 @@ export default class Map {
   }
 
   getMinMaxSetting() {
-    return document.getElementById('border_data').checked;
+    return $( "#border_data" ).parent().hasClass( "active" );
   }
   getMoveOverViewSetting() {
-    return document.getElementById('auto_change').checked;
+    return $( "#auto_change" ).parent().hasClass( "active" );
   }
 
   /**
@@ -603,6 +603,7 @@ export default class Map {
    * @param {String} year
    */
   updateData(year = this._getFirstYearOfDataset(), data) {
+    console.log('updateData')
     current_year = year;
     let maxDataKey = 0;
     KreiseNRW.features.map(kreis => {
@@ -617,19 +618,22 @@ export default class Map {
             maxDataKey = this._getMaxFeatureInArray(kreis.properties.dataArray);
           }
           if (maxDataKey !== 0) {
-            //console.log('Gewinner ist : ');
             kreis.properties[this.feature_dataset.title] = maxDataKey;
           } else {
             kreis.properties[this.feature_dataset.title] = Number(
-              kreisPop.data[year]
-            );
+              kreisPop.data[year]);
           }
         }
       });
     });
 
     if (statistics_state.enabled) {
+      if (this.getMinMaxSetting()){
+        this.map.getSource('KreiseNRW').setData(KreiseNRW);
+      } else {
+      }
       this.changeStatistics(statistics_state.type);
+
       this.map.setPaintProperty(
         'kreisgrenzen',
         'fill-color',
@@ -653,7 +657,6 @@ export default class Map {
       });
       console.log(stepColor);
 
-      console.log();
       this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
         property: this.feature_dataset.title,
         type: 'categorical',
@@ -698,15 +701,12 @@ export default class Map {
     if (file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') {
       const parser = new CSVParser();
       parser.getAsText(file, data => {
-        const win = window.open();
-        win.document.write(
-          decodeURIComponent(encodeURIComponent(JSON.stringify(data)))
-        );
-        if (data.unit === 'wahlen') {
+        if (document.getElementById('csv_electiondata').checked) {
           this._setElectionDataFromJSON(data, file.name);
           //data.unit = '%';
-        } else {
+        } else if (document.getElementById('csv_timedata').checked) {
           this._setDataFromJSON(data, file.name);
+        } else {
         }
       });
     } else {
@@ -768,8 +768,6 @@ export default class Map {
         this._applyStatistic(
           Statistics.getEqualInterval(
             this._getData(),
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -778,8 +776,6 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassStdDeviation(
             this._getData(),
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -788,8 +784,6 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassArithmeticProgression(
             this._getData(),
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -798,8 +792,6 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassGeometricProgression(
             this._getData(),
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -808,8 +800,6 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassQuantile(
             this._getData(),
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -818,8 +808,6 @@ export default class Map {
         this._applyStatistic(
           Statistics.getClassJenks(
             this._getData(),
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             document.getElementById('stats_classes').value
           )
         );
@@ -828,8 +816,6 @@ export default class Map {
         this._applyStatistic(
           Statistics.getUniqueValues(
             this._getData(),
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
             this._getData().length
           )
         );
@@ -945,7 +931,6 @@ export default class Map {
     $('#my_dataviz').hide();
     $('#timeslider, #border_option').show();
 
-
     $('.legend').each(function() {
       $(this).removeClass('legendWithPieChart');
     });
@@ -1005,13 +990,6 @@ export default class Map {
     console.log('_setElectionDataFromJSON');
     this.legende.feature_dataset = data;
     this.feature_dataset = data;
-
-    //createAttribute
-    // show json in new tab
-    //const win = window.open();
-    //win.document.write(
-    //  decodeURIComponent(encodeURIComponent(JSON.stringify(data)))
-    //);
 
     //document.getElementById('legend-heading').innerHTML = data.title;
     $('#my_dataviz').show();
@@ -1185,14 +1163,15 @@ export default class Map {
 
   _getAllData() {
     const temp = [];
-//console.log(this.feature_dataset.data)
+    //console.log(this.feature_dataset.data)
     this.feature_dataset.data.forEach(kreisAllData => {
       //console.log(kreisAllData.data)
-      for (let k in kreisAllData.data) {
-
-          if(!isNaN(kreisAllData.data[k])){temp.push(kreisAllData.data[k])}else{console.log(kreisAllData.data[k])}
-
-
+      for (const k in kreisAllData.data) {
+        if (!isNaN(kreisAllData.data[k])) {
+          temp.push(kreisAllData.data[k]);
+        } else {
+          console.log(kreisAllData.data[k]);
+        }
       }
     });
 
@@ -1202,18 +1181,17 @@ export default class Map {
   _getData() {
     let temp = [];
 
-    if(this.getMinMaxSetting()){
+    if (this.getMinMaxSetting()) {
       temp = this._getAllData();
-    }else{
+    } else {
       KreiseNRW.features.forEach(e => {
         const val = e.properties[this.feature_dataset.title];
         if (val) {
           temp.push(e.properties[this.feature_dataset.title]);
         }
       });
-
     }
-    console.log(temp)
+    //console.log(temp);
 
     return temp;
   }
