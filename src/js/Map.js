@@ -85,6 +85,7 @@ export default class Map {
    * @param {function} loadDone callback function when load was successful
    */
   constructor(container, center, zoom, loadDone) {
+    this.alldata = false;
     mapboxgl.accessToken = mapboxToken;
     this.map = new mapboxgl.Map({
       container: container,
@@ -129,8 +130,6 @@ export default class Map {
       // When a click event occurs on a feature in the places layer, open a popup at the
       // location of the feature, with description HTML from its properties.
       this.map.on('click', 'kreisgrenzen', e => {
-        console.log(this);
-        console.log(this.name);
         if (e.features.length > 0) {
           new mapboxgl.Popup()
             .setLngLat(e.lngLat)
@@ -152,7 +151,9 @@ export default class Map {
           const states = this.map.queryRenderedFeatures(e.point, {
             layers: ['kreisgrenzen']
           });
-          this._updatePipe(JSON.parse(states[0].properties.dataArray));
+          try{
+            this._updatePipe(JSON.parse(states[0].properties.dataArray));
+          }catch(error){}
         }
       });
 
@@ -222,12 +223,14 @@ export default class Map {
   }
 
   getMinMaxSetting() {
-    console.log("#border_data")
-    console.log($("#border_data").parent().hasClass( "active" ))
-    return $("#border_data").parent().hasClass( "active" );
+    return $('#border_data')
+      .parent()
+      .hasClass('active');
   }
   getMoveOverViewSetting() {
-    return $( "#auto_change" ).parent().hasClass( "active" );
+    return $('#auto_change')
+      .parent()
+      .hasClass('active');
   }
 
   /**
@@ -605,7 +608,7 @@ export default class Map {
    * @param {String} year
    */
   updateData(year = this._getFirstYearOfDataset(), data) {
-    console.log('updateData')
+    console.log('updateData');
     current_year = year;
     let maxDataKey = 0;
     KreiseNRW.features.map(kreis => {
@@ -623,18 +626,25 @@ export default class Map {
             kreis.properties[this.feature_dataset.title] = maxDataKey;
           } else {
             kreis.properties[this.feature_dataset.title] = Number(
-              kreisPop.data[year]);
+              kreisPop.data[year]
+            );
           }
         }
       });
     });
 
     if (statistics_state.enabled) {
-      if (this.getMinMaxSetting()){
+      if (this.getMinMaxSetting()) {
         this.map.getSource('KreiseNRW').setData(KreiseNRW);
+        if (!this.alldata){
+          console.log('changestatisticsHIER')
+          this.changeStatistics(statistics_state.type);
+        }
       } else {
+        this.changeStatistics(statistics_state.type);
+
       }
-      this.changeStatistics(statistics_state.type);
+
 
       this.map.setPaintProperty(
         'kreisgrenzen',
@@ -760,6 +770,10 @@ export default class Map {
   }
 
   changeStatistics(type) {
+    if (statistics_state.type !== type) {
+      this.alldata = false;
+    }
+
     statistics_state.type = type;
 
     switch (type) {
@@ -816,10 +830,7 @@ export default class Map {
         break;
       case 'unique':
         this._applyStatistic(
-          Statistics.getUniqueValues(
-            this._getData(),
-            this._getData().length
-          )
+          Statistics.getUniqueValues(this._getData(), this._getData().length)
         );
         break;
     }
@@ -1165,19 +1176,33 @@ export default class Map {
 
   _getAllData() {
     const temp = [];
-    //console.log(this.feature_dataset.data)
-    this.feature_dataset.data.forEach(kreisAllData => {
-      //console.log(kreisAllData.data)
-      for (const k in kreisAllData.data) {
-        if (!isNaN(kreisAllData.data[k])) {
-          temp.push(kreisAllData.data[k]);
-        } else {
-          console.log(kreisAllData.data[k]);
-        }
-      }
-    });
+    if (!this.alldata) {
+      console.log('in alldata Function');
+      //console.log(this.feature_dataset.data)
+      KreiseNRW.features.map(kreis => {
+        this.feature_dataset.data.forEach(kreisAllData => {
+          //console.log(kreisAllData.data)
+          if (
+            kreis.properties.Kreisnummer.slice(
+              0,
+              kreis.properties.Kreisnummer.length - 3
+            ) === kreisAllData.AGS
+          ) {
+            for (const k in kreisAllData.data) {
+              if (!isNaN(kreisAllData.data[k])) {
+                temp.push(kreisAllData.data[k]);
+              } else {
+                console.log(kreisAllData.data[k]);
+              }
+            }
+          }
+        });
+      });
+      this.alldata = temp;
+    }
+    console.log(this.alldata);
 
-    return temp;
+    return this.alldata;
   }
 
   _getData() {
