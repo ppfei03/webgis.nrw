@@ -222,7 +222,9 @@ export default class Map {
   }
 
   getMinMaxSetting() {
-    return $( "#border_data" ).parent().hasClass( "active" );
+    console.log("#border_data")
+    console.log($("#border_data").parent().hasClass( "active" ))
+    return $("#border_data").parent().hasClass( "active" );
   }
   getMoveOverViewSetting() {
     return $( "#auto_change" ).parent().hasClass( "active" );
