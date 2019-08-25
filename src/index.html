@@ -39,7 +39,6 @@
     <script src="https://d3js.org/d3.v4.js"></script>
 
 
-
 </head>
 
 <body style="visibility: hidden">
@@ -404,72 +403,48 @@
     <div class='legend collapse multi-collapse'>
         <div class='my-legend'>
             <div class='legend-info-wrapper' style="display: none">
-                <h3 id='legend-heading' class='legend-title editable'></h3>
-                <h5 id='year'>Jahr</h5>
-                <div class="scale-legend">
-                    <div id='legend-bar'>
-                    </div>
-                    <div class='labels'>
-                        <div class='label' id="legend-min">0</div>
-                        <div class='label' id="legend-max">100</div>
-                    </div>
+                <div id='legend-heading'></div>
+                <div id='year'></div>
+
+                <div id='legend-scale-bar' class="scale-legend">
                 </div>
-                <div class='discrete-legend' style="display: none;">
-                    <ul class='legend-labels'>
-                        <li>
-                            <span style='background:#F1EEF6;'></span>
-                            <br/>0 - 20%
-                        </li>
-                        <li>
-                            <span style='background:#BDC9E1;'></span>
-                            <br/>40%
-                        </li>
-                        <li>
-                            <span style='background:#74A9CF;'></span>
-                            <br/>60%
-                        </li>
-                        <li>
-                            <span style='background:#2B8CBE;'></span>
-                            <br/>80%
-                        </li>
-                        <li>
-                            <span style='background:#045A8D;'></span>
-                            <br/>100%
-                        </li>
-                    </ul>
-                </div>
+
                 <div>
-                    <div id="border_option"class="option-menue">
-                    <label>Grenzen anpassen auf </label>
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-info active no-margin-bottom" id="border_year2">
-                            <input type="radio" name="options" id="border_year" autocomplete="off" checked>Jahr
-                        </label>
-                        <label class="btn btn-info no-margin-bottom" id="border_data2">
-                            <input type="radio" name="options" id="border_data" autocomplete="off">Daten
-                        </label>
-                    </div>
+                    <div id="map_data_option" class="option-menue">
 
-                    <i class="material-icons classification-info" data-toggle="tooltip" data-placement="top"
-                       data-html="true" title=""
-                       data-original-title="Jahr = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br>Daten = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst."
-                       style="margin-top: 0px;">info</i>
-                </div>
-                    <div class="option-menue">
+                        <!--<div id="border_option" class="option-menue">
+                            <label>Grenzen anpassen auf </label>
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                <label class="btn btn-info active no-margin-bottom" id="border_year2">
+                                    <input type="radio" name="options" id="border_year" autocomplete="off" checked>Jahr
+                                </label>
+                                <label class="btn btn-info no-margin-bottom" id="border_data2">
+                                    <input type="radio" name="options" id="border_data" autocomplete="off">Daten
+                                </label>
+                            </div>
 
-                        <label>Veränderung</label>
-                        <div class="btn-group btn-group-toggle"  data-toggle="buttons">
-                            <label class="btn btn-info active no-margin-bottom">
-                                <input type="radio" name="options" id="auto_change" autocomplete="off" checked>automatisch
-                            </label>
-                            <label class="btn btn-info no-margin-bottom">
-                                <input type="radio" name="options" id="click_change" autocomplete="off">Auf Klick
-                            </label>
+                            <i class="material-icons classification-info" data-toggle="tooltip" data-placement="top"
+                               data-html="true" title=""
+                               data-original-title="Jahr = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br>Daten = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst."
+                               style="margin-top: 0px;">info</i>
                         </div>
-                        <i class="material-icons classification-info" data-toggle="tooltip" data-placement="top"
-                           data-html="true" title=""
-                           data-original-title="automatisch = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br>Auf Klick = Das Diagramm ändert sich nur bei Klick auf einen der Kreise."
-                           style="margin-top: 0px;">info</i>
+                        <div class="option-menue">
+
+                            <label>Veränderung</label>
+                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                <label class="btn btn-info active no-margin-bottom">
+                                    <input type="radio" name="options" id="auto_change" autocomplete="off" checked>automatisch
+                                </label>
+                                <label class="btn btn-info no-margin-bottom">
+                                    <input type="radio" name="options" id="click_change" autocomplete="off">Auf Klick
+                                </label>
+                            </div>
+                            <i class="material-icons classification-info" data-toggle="tooltip" data-placement="top"
+                               data-html="true" title=""
+                               data-original-title="automatisch = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br>Auf Klick = Das Diagramm ändert sich nur bei Klick auf einen der Kreise."
+                               style="margin-top: 0px;">info</i>
+                        </div>-->
+
                     </div>
                 </div>
             </div>
@@ -534,7 +509,7 @@
                     <div class="form-group">
                         <label for="csv_title">Titel</label>
                         <input type="text" class="form-control" id="csv_title" aria-describedby="titleHelp"
-                                placeholder="Titel des Datensatzes">
+                               placeholder="Titel des Datensatzes">
                         <small id="titleHelp" class="form-text text-muted">Der Titel beschreibt den Inhalt und Kontext
                             des Datensatzes
                         </small>
@@ -547,7 +522,7 @@
                             an, z.B. "%"
                         </small>
                     </div>
-                    <div id="csv_option"class="option-menue">
+                    <div id="csv_option" class="option-menue">
                         <label>Wähle die Art der Daten </label>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label class="btn btn-info active no-margin-bottom">
@@ -569,8 +544,10 @@
                     </div>
                     <div class="form-group">
                         <label>Vorlagen</label><br>
-                        <a id="csvTemplateTimeline" href="/tableExample/einwohner_beispiel_tabelle.csv" download>... für Zeitdaten</a><br>
-                        <a id="csvTemplatePieChart" href="/tableExample/europawahl2019_beispiel_tabelle.csv" download>... für Wahldaten </a></div>
+                        <a id="csvTemplateTimeline" href="/tableExample/einwohner_beispiel_tabelle.csv" download>... für
+                            Zeitdaten</a><br>
+                        <a id="csvTemplatePieChart" href="/tableExample/europawahl2019_beispiel_tabelle.csv" download>...
+                            für Wahldaten </a></div>
                 </form>
 
             </div>
@@ -698,17 +675,17 @@
 <script src="assets/js/main.min.js" type="application/javascript"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script>
-    /**
-     window.dataLayer = window.dataLayer || [];
+  /**
+   window.dataLayer = window.dataLayer || [];
 
-     function gtag() {
+   function gtag() {
     dataLayer.push(arguments);
   }
 
-     gtag("js", new Date());
+   gtag("js", new Date());
 
-     gtag("config", "UA-114288111-1");
-     **/
+   gtag("config", "UA-114288111-1");
+   **/
 
 
 </script>
@@ -716,15 +693,15 @@
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-145293554-1"></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
+  window.dataLayer = window.dataLayer || [];
 
-    function gtag() {
-        dataLayer.push(arguments);
-    }
+  function gtag() {
+    dataLayer.push(arguments);
+  }
 
-    gtag("js", new Date());
+  gtag("js", new Date());
 
-    gtag("config", "UA-145293554-1");
+  gtag("config", "UA-145293554-1");
 </script>
 
 

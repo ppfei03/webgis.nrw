@@ -58,9 +58,13 @@ class App {
 
     // dual mode triggered
     $('#mode-dual').on('change', () => {
+      $('.split_mapLegend').remove();
       if (!this.dualView && $('#mode-dual').is(':checked')) {
+
+
         if (this.splitView) {
           $('#split_map').remove();
+
           $('.mapboxgl-compare').remove();
           this.splitView = false;
         }
@@ -97,6 +101,8 @@ class App {
 
     // split mode triggered
     $('#mode-split').on('change', () => {
+      $('.dual_mapLegend').remove();
+
       if (!this.splitView && $('#mode-split').is(':checked')) {
         if (this.dualView) {
           $('.webgis-view-split').remove();
@@ -149,6 +155,8 @@ class App {
 
     // standard mode triggered
     $('#mode-standard').on('change', () => {
+      $('.dual_mapLegend, .split_mapLegend').remove();
+
       if ($('#mode-standard').is(':checked')) {
         if (this.dualView) {
           $('.webgis-view-split').remove();
@@ -158,6 +166,7 @@ class App {
         }
         if (this.splitView) {
           $('#split_map').remove();
+          $('.split_mapLegend').hide();
           $('.mapboxgl-compare').remove();
           this.splitView = false;
           $('#map').droppable({ disabled: false });

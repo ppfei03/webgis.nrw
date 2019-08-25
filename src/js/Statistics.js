@@ -42,6 +42,16 @@ export default class Statistics {
 
     return serie.getUniqueValues(number_of_classes);
   }
+  static getMin(data) {
+    const serie = new geostats(data);
+
+    return serie.min();
+  }
+  static getMax(data) {
+    const serie = new geostats(data);
+
+    return serie.max();
+  }
 
   static getRanges(data) {
     const serie = new geostats(data);

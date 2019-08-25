@@ -1,7 +1,6 @@
 import mapboxgl from 'mapbox-gl';
 import 'whatwg-fetch';
 import * as d3 from 'd3';
-//import geostats from 'geostats';
 
 import colorLerp from 'color-lerp';
 
@@ -85,6 +84,7 @@ export default class Map {
    * @param {function} loadDone callback function when load was successful
    */
   constructor(container, center, zoom, loadDone) {
+    this.container = `${container}Legend`;
     this.alldata = false;
     mapboxgl.accessToken = mapboxToken;
     this.map = new mapboxgl.Map({
@@ -97,8 +97,9 @@ export default class Map {
     allInstances.push(this);
     this._updatePipe(data1);
 
-    this.legende = new Legend();
-    this.legende.name = `${container}LegendHeader`;
+    this.legende = new Legend(`${this.container}`);
+    this.legende.feature_dataset = { title: 'test' };
+    //this.legende.name = `${container}`;
     //this.legende.parent = this.name;
 
     this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
@@ -151,9 +152,9 @@ export default class Map {
           const states = this.map.queryRenderedFeatures(e.point, {
             layers: ['kreisgrenzen']
           });
-          try{
+          try {
             this._updatePipe(JSON.parse(states[0].properties.dataArray));
-          }catch(error){}
+          } catch (error) {}
         }
       });
 
@@ -223,12 +224,12 @@ export default class Map {
   }
 
   getMinMaxSetting() {
-    return $('#border_data')
+    return $(`#${this.container}_border_data`)
       .parent()
       .hasClass('active');
   }
   getMoveOverViewSetting() {
-    return $('#auto_change')
+    return $(`#${this.container}_auto_change`)
       .parent()
       .hasClass('active');
   }
@@ -355,23 +356,20 @@ export default class Map {
   changeColor(type, value) {
     if (type === 'low') {
       lowColor = value;
+      this.legende.lowColor = value;
     } else if (type === 'high') {
       highColor = value;
+      this.legende.highColor = value;
     }
+    this.legende.legendActivate();
 
     if (this.feature_dataset.title) {
       if (this.map.getLayer('kreisgrenzen')) {
         this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
           property: this.feature_dataset.title,
           stops: [
-            [
-              this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-              lowColor
-            ],
-            [
-              this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
-              highColor
-            ]
+            [Statistics.getMin(this._getData()), lowColor],
+            [Statistics.getMax(this._getData()), highColor]
           ]
         });
       }
@@ -383,19 +381,7 @@ export default class Map {
       });
     }
 
-    document.getElementById('legend-min').innerHTML = this._getMinFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MIN'
-    );
-    document.getElementById('legend-max').innerHTML = this._getMaxFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MAX'
-    );
-    document.getElementById(
-      'legend-bar'
-    ).style.background = `linear-gradient(to right, ${lowColor}, ${highColor})`;
+    this.legende.changeLegendScale(this._getData());
   }
 
   /**
@@ -609,6 +595,9 @@ export default class Map {
    */
   updateData(year = this._getFirstYearOfDataset(), data) {
     console.log('updateData');
+
+    this.legende.year = year;
+    this.legende.legendActivate();
     current_year = year;
     let maxDataKey = 0;
     KreiseNRW.features.map(kreis => {
@@ -636,15 +625,13 @@ export default class Map {
     if (statistics_state.enabled) {
       if (this.getMinMaxSetting()) {
         this.map.getSource('KreiseNRW').setData(KreiseNRW);
-        if (!this.alldata){
-          console.log('changestatisticsHIER')
+        if (!this.alldata) {
+          console.log('changestatisticsHIER');
           this.changeStatistics(statistics_state.type);
         }
       } else {
         this.changeStatistics(statistics_state.type);
-
       }
-
 
       this.map.setPaintProperty(
         'kreisgrenzen',
@@ -653,9 +640,10 @@ export default class Map {
       );
     } else if (data) {
       this.map.getSource('KreiseNRW').setData(KreiseNRW);
+      const dataInMap = this._getData();
       const allDataInMap = Statistics.getUniqueValues(
-        this._getData(),
-        this._getData().length
+        dataInMap,
+        dataInMap.length
       );
       const stepColor = [];
       const colors = colorLerp(lowColor, highColor, allDataInMap.length, 'hex');
@@ -679,30 +667,13 @@ export default class Map {
       this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
         property: this.feature_dataset.title,
         stops: [
-          [
-            this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-            lowColor
-          ],
-          [
-            this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
-            highColor
-          ]
+          [Statistics.getMin(this._getData()), lowColor],
+          [Statistics.getMax(this._getData()), highColor]
         ]
       });
     }
 
-    document.getElementById('year').textContent = year;
-
-    document.getElementById('legend-min').innerHTML = this._getMinFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MIN'
-    );
-    document.getElementById('legend-max').innerHTML = this._getMaxFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MAX'
-    );
+    this.legende.changeLegendScale(this._getData());
   }
 
   /**
@@ -840,14 +811,8 @@ export default class Map {
     this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
       property: this.feature_dataset.title,
       stops: [
-        [
-          this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-          lowColor
-        ],
-        [
-          this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
-          highColor
-        ]
+        [Statistics.getMin(this._getData()), lowColor],
+        [Statistics.getMax(this._getData()), highColor]
       ]
     });
     this._hideLegend();
@@ -855,8 +820,8 @@ export default class Map {
   }
 
   _hideLegend() {
-    $('.discrete-legend').hide();
-    $('.scale-legend').show();
+    this.legende.legendeShow();
+    this.legende.legendDiscreteHide();
 
     current_legend = $('.scale-legend')[0];
   }
@@ -918,8 +883,10 @@ export default class Map {
     statistics_state.enabled = true;
     statistics_state.colorStops = stops;
 
-    $('.discrete-legend').show();
-    $('.scale-legend').hide();
+    //$('.discrete-legend').show();
+    //$('.scale-legend').hide();
+    this.legende.legendDiscreteShow();
+    this.legende.legendeHide();
 
     current_legend = $('.discrete-legend')[0];
   }
@@ -1003,8 +970,8 @@ export default class Map {
     console.log('_setElectionDataFromJSON');
     this.legende.feature_dataset = data;
     this.feature_dataset = data;
+    this.legende.year = 'Wahlbeteiligung';
 
-    //document.getElementById('legend-heading').innerHTML = data.title;
     $('#my_dataviz').show();
     $('#timeslider, #border_option').hide();
 
@@ -1027,7 +994,7 @@ export default class Map {
           kreis.properties[data.title] = Number(
             data_feature.data.Wahlbeteiligung
           );
-          document.getElementById('year').textContent = 'Wahlbeteiligung';
+          //document.getElementById('year').textContent = 'Wahlbeteiligung';
 
           const dataArray = {};
           for (let i = 5; i <= Object.keys(data_feature.data).length; i++) {
@@ -1047,28 +1014,13 @@ export default class Map {
     this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
       property: data.title,
       stops: [
-        [
-          this._getMinFeature(KreiseNRW, this.feature_dataset.title, 'MIN'),
-          lowColor
-        ],
-        [
-          this._getMaxFeature(KreiseNRW, this.feature_dataset.title, 'MAX'),
-          highColor
-        ]
+        [Statistics.getMin(this._getData()), lowColor],
+        [Statistics.getMax(this._getData()), highColor]
       ]
     });
 
     // update ui elements
-    document.getElementById('legend-min').innerHTML = this._getMinFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MIN'
-    );
-    document.getElementById('legend-max').innerHTML = this._getMaxFeature(
-      KreiseNRW,
-      this.feature_dataset.title,
-      'MAX'
-    );
+    this.legende.changeLegendScale(this._getData());
 
     if (statistics_state.enabled) {
       statistics_state.enabled = false;

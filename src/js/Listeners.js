@@ -371,23 +371,10 @@ export default class Listeners {
 
     document.getElementById('clear').addEventListener('click', () => {
       this.getActiveMap().loadData();
+      this.getActiveMap()._hideLegend();
     });
 
-    document.getElementById('border_year2').addEventListener('click', e => {
-      const year = parseInt($('#year').text(), 10);
-      $('#border_data2').removeClass('active');
-      $('#border_year2').addClass('active');
-      this.getActiveMap().updateData(year);
-      $('#border_year2').removeClass('active');
 
-    });
-
-    document.getElementById('border_data2').addEventListener('click', e => {
-      const year = parseInt($('#year').text(), 10);
-      $('#border_data2').addClass('active');
-      this.getActiveMap().updateData(year);
-      $('#border_data2').removeClass('active');
-    });
 
     // document.getElementById('Wahl17_SPD').addEventListener('click', () => {
     //     map.setData('Wahlergebnisse_CDU_1976_bis_2013', 'Wahl17_SPD');

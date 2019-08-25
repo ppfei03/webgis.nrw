@@ -78,18 +78,18 @@
 }
 
 // legend
-#legend-bar {
+.legend-bar {
     height: 15px;
     width: 100%;
     background: linear-gradient(to right, #80BCFF, #1A5FAC);
     margin-bottom: 5px;
 }
 
-#legend-min {
+.legend-min {
     float: left;
 }
 
-#legend-max {
+.legend-max {
     float: right;
 }
 
