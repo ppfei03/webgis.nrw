@@ -7,6 +7,7 @@ export let primary_map
 export let secondary_map
 export let dualView = false;
 export let splitView = false;
+import { allInstances } from "./Map";
 
 class App {
 
@@ -63,6 +64,7 @@ class App {
 
 
         if (this.splitView) {
+          allInstances.pop()
           $('#split_map').remove();
 
           $('.mapboxgl-compare').remove();
@@ -105,6 +107,8 @@ class App {
 
       if (!this.splitView && $('#mode-split').is(':checked')) {
         if (this.dualView) {
+          allInstances.pop()
+
           $('.webgis-view-split').remove();
           $('.webgis-view, #map').css('width', '100vw');
           this.dualView = false;
@@ -159,14 +163,17 @@ class App {
 
       if ($('#mode-standard').is(':checked')) {
         if (this.dualView) {
+          allInstances.pop()
+
           $('.webgis-view-split').remove();
           $('.webgis-view, #map').css('width', '100vw');
           this.dualView = false;
           $('#map').droppable({ disabled: false });
         }
         if (this.splitView) {
+          allInstances.pop()
+
           $('#split_map').remove();
-          $('.split_mapLegend').hide();
           $('.mapboxgl-compare').remove();
           this.splitView = false;
           $('#map').droppable({ disabled: false });

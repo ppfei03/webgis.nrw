@@ -20,15 +20,17 @@
 }
 
 .legend {
-    height: 400px;
+    height: 550px;
     width: 350px;
 }
 .legendWithPieChart {
     height: 640px;
     width: 350px;
 }
-
-#timeslider {
+.btn_option {
+    padding: 0 .75rem !important;
+}
+.timeslider {
     display: flex
 }
 
@@ -41,19 +43,19 @@
     flex-grow: 1;
 }
 
-#slider {
+.slider {
     width: 100%
 }
 
-#timeslide-min {
+.timeslide-min {
     float: left;
 }
 
-#timeslide-max {
+.timeslide-max {
     float: right;
 }
 
-#download_gif_spinner, .timeslide-control {
+.download_gif_spinner, .timeslide-control {
     width: 24px;
     height: 24px;
     margin-top: auto;

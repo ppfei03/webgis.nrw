@@ -1,6 +1,8 @@
 import { primary_map, secondary_map } from "./App";
 import { allInstances } from "./Map";
 import Statistics from "./Statistics";
+import GIFExporter from './GIFExporter';
+let myGIFExporter = undefined;
 
 class Legend {
   feature_dataset;
@@ -11,20 +13,21 @@ class Legend {
   constructor(name) {
     this.name = name;
 
-    $("#legend-heading").append("<h3 id='" + this.name + "_legend-heading' class='legend-title editable "+ this.name +"'></h3>");
+    $("#legend-heading").append("<h3 id='" + this.name + "_legend-heading' class='legend-title editable " + this.name + "'></h3>");
 
-    $("#year").append("<h5 id='" + this.name + "_year' class='"+ this.name +"'></h5>");
+    $("#year").append("<h5 id='" + this.name + "_year' class='" + this.name + "'></h5>");
 
     $("#legend-scale-bar").append(
-      "<div id='" + this.name + "_legend' class='"+ this.name +"'>" +
+      "<div id='" + this.name + "_legend' class='" + this.name + "'>" +
       "<div class='legend-bar'id='" + this.name + "_legend-bar'></div>" +
       "<div class='labels'>" +
       "<div class='label legend-min' id='" + this.name + "_legend-min'>0</div>" +
       "<div class='label legend-max' id='" + this.name + "_legend-max'>100</div>" +
       "</div>" +
       "</div>");
+
     $("#legend-scale-bar").append(
-      "<div id='" + this.name + "_discrete-legend' class='discrete-legend"+ this.name +"' style=\"display: none;\">" +
+      "<div id='" + this.name + "_discrete-legend' class='discrete-legend " + this.name + "' style=\"display: none;\">" +
       "<ul class=\"legend-labels\">" +
       "<li><span style=\"background:#F1EEF6;\"></span><br/>0 - 20%</li>" +
       "<li><span style=\"background:#BDC9E1;\"></span><br/>40%</li>" +
@@ -33,73 +36,157 @@ class Legend {
       "<li><span style=\"background:#045A8D;\"></span><br/>100%</li>" +
       "</ul>" +
       "</div>");
-console.log('hier1')
+
     $("#map_data_option").append(
-      "<div class='"+ this.name +"'>" +
+      "<div class='" + this.name + "'>" +
       "<div id=\"" + this.name + "_border_option\" class=\"option-menue\">" +
       "<label>Grenzen anpassen auf </label>" +
       "<div class=\"btn-group btn-group-toggle\" data-toggle=\"buttons\">" +
-      "<label class=\"btn btn-info active no-margin-bottom\" id=\"" + this.name + "_border_year2\" >" +
-      "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_border_year\" autoComplete=\"off\" checked>Jahr" +
+      "<label class=\"btn btn_option btn-info active no-margin-bottom\" id=\"" + this.name + "_border_year\" >" +
+      "<input type=\"radio\" name=\"options\"  autoComplete=\"off\" checked>Jahr" +
       "</label>" +
-      "<label class=\"btn btn-info no-margin-bottom\" id=\"" + this.name + "_border_data2\">" +
-      "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_border_data\" autoComplete=\"off\">Daten" +
+      "<label class=\"btn btn_option btn-info no-margin-bottom\" id=\"" + this.name + "_border_data\">" +
+      "<input type=\"radio\" name=\"options\"  autoComplete=\"off\">Daten" +
       "</label>" +
       "</div>" +
-      "<i class=\"material-icons classification-info\" data-toggle=\"tooltip\" data-placement=\"top\"" +
+      "<i class=\"material-icons right-middle\" data-toggle=\"tooltip\" data-placement=\"top\"" +
       "data-html=\"true\" title=\"\"data-original-title=\"Jahr = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br>Daten = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst.\"style=\"margin-top: 0px;\">info</i>" +
       "</div>" +
       " <div class=\"option-menue\">" +
       "<label>Veränderung</label>" +
       "<div class=\"btn-group btn-group-toggle\" data-toggle=\"buttons\">" +
-      "<label class=\"btn btn-info active no-margin-bottom\">" +
+      "<label class=\"btn btn_option btn-info active no-margin-bottom\">" +
       "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_auto_change\" autoComplete=\"off\" checked>automatisch</label>" +
-      "<label class=\"btn btn-info no-margin-bottom\">" +
+      "<label class=\"btn btn_option btn-info no-margin-bottom\">" +
       "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_click_change\" autoComplete=\"off\">Auf Klick</label>" +
-      "</div><i class=\"material-icons classification-info\" data-toggle=\"tooltip\" data-placement=\"top\"data-html=\"true\" title=\"\"data-original-title=\"automatisch = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br>Auf Klick = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.\"style=\"margin-top: 0px;\">info</i>" +
-      "</div>"+
+      "</div><i class=\"material-icons right-middle\" data-toggle=\"tooltip\" data-placement=\"top\"data-html=\"true\" title=\"\"data-original-title=\"automatisch = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br>Auf Klick = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.\"style=\"margin-top: 0px;\">info</i>" +
+      "</div>" +
       "</div>"
     );
-    console.log('hier2');
 
-this.legendAddListener()
+    $("#timeslider").append(
+      '<div id="' + this.name + '_timeslider" class="timeslider ' + this.name + '" style="display: none">' +
+      ' <i id="' + this.name + '_timeslide-play" class="material-icons timeslide-control">play_arrow</i>' +
+      '<i id="' + this.name + '_timeslide-pause" class="material-icons timeslide-control" style="display: none">pause</i>' +
+      '<div class="grow">' +
+      '<div class="labels">' +
+      '<label id="' + this.name + '_timeslide-min" class="timeslide-min">1962</label>' +
+      '<label id="' + this.name + '_timeslide-max" class="timeslide-max">2010</label>' +
+      '</div>' +
+      '<input id="' + this.name + '_slider" class="slider" type="range" min="0" max="100" step="1" value="0"/>' +
+      '</div>' +
+      '<i id="' + this.name + '_download_gif" class="material-icons timeslide-control" style="display: none">gif</i>' +
+      '<div id="' + this.name + '_download_gif_spinner" class="download_gif_spinner" style="display: none"></div>' +
+      '</div>'
+    );
+
+    this.legendAddListener(this.getActivInstance())
 
   }
 
   legendActivate() {
+    console.log(allInstances)
+    allInstances.forEach(function(map) {
+      map.legende.mapLegendeHide()
+    });
     $("#" + this.name + "_legend-heading").html(this.feature_dataset.title);
     $("#" + this.name + "_year").html(this.year);
     $("#" + this.name + "_legend-bar").css("background-image", `linear-gradient(to right, ${this.lowColor}, ${this.highColor})`);
+
+    allInstances[this.getActivInstance()].legende.mapLegendeShow();
   }
 
-  legendAddListener(){
+  getActivInstance() {
     let id;
 
-    if(allInstances[0].container === this.name){
+    if (allInstances[0].container === this.name) {
       id = 0
-    }else if (allInstances[1].container === this.name){
+    } else if (allInstances[1].container === this.name) {
       id = 1
-    }else{
+    } else {
       id = 2
     }
+    return id
+  }
 
-    document.getElementById(this.name + '_border_year2').addEventListener('click', () => {
+  legendAddListener(id) {
+    console.log('legendAddListener')
+
+    document.getElementById(this.name + '_border_year').addEventListener('click', () => {
       const year = parseInt($("#" + this.name + "_year").text(), 10);
-      $("#" + this.name + "_border_data2").removeClass('active');
-      $("#" + this.name + "_border_year2").addClass('active');
-      console.log(allInstances)
+      allInstances[id].alldata = {
+        data: false,
+        enabled: false
+      };
       allInstances[id].updateData(year);
-      $("#" + this.name + "_border_year2").removeClass('active');
-
     });
 
-    document.getElementById(this.name +'_border_data2').addEventListener('click', () => {
+    document.getElementById(this.name + '_border_data').addEventListener('click', () => {
       const year = parseInt($("#" + this.name + "_year").text(), 10);
-      $("#" + this.name + "_border_data2").addClass('active');
+      allInstances[id].alldata = {
+        data: false,
+        enabled: true
+      };
       allInstances[id].updateData(year);
-      $("#" + this.name + "_border_data2").removeClass('active');
-
     });
+
+
+    document.getElementById(this.name + '_timeslide-play').addEventListener('click', () => {
+      $('#' + this.name + '_timeslide-play').hide();
+      $('#' + this.name + '_timeslide-pause').show();
+
+      const indices = allInstances[id]._getYearsOfDataset();
+
+      myGIFExporter = new GIFExporter(allInstances[id]);
+
+      let i = 0;
+      this.sliderLoop = setInterval(() => {
+        // If the autoPlay was paused..
+        if (this.slider_currentValue !== indices[i] && this.slider_isPaused) {
+          i = indices.indexOf(this.slider_currentValue);
+          this.slider_isPaused = false;
+        }
+
+        $('#' + this.name + '_slider').val(`${indices[i]}`);
+        this.slider_currentValue = $('#' + this.name + '_slider').val();
+        allInstances[id].updateData(indices[i]);
+
+        myGIFExporter.addFrame();
+
+        $('#' + this.name + '_download_gif').show();
+
+        // Reset when iterating finished
+        if (i === indices.length - 1) {
+          clearInterval(this.sliderLoop);
+          $('#' + this.name + '_timeslide-pause').hide();
+          $('#' + this.name + '_timeslide-play').show();
+          $('#' + this.name + '_slider').val(`${indices[0]}`);
+          allInstances[id].updateData(indices[0]);
+        }
+        i++;
+      }, 500);
+    });
+
+    document.getElementById(this.name + '_timeslide-pause').addEventListener('click', () => {
+      $('#' + this.name + '_timeslide-pause').hide();
+      $('#' + this.name + '_timeslide-play').show();
+      this.slider_isPaused = true;
+      clearInterval(this.sliderLoop);
+    });
+
+    document.getElementById(this.name + '_download_gif').addEventListener('click', () => {
+      myGIFExporter.downloadGIF(() => {
+        myGIFExporter = undefined; // "destroy" object
+      });
+    });
+
+    document.getElementById(this.name + '_slider').addEventListener('input', e => {
+      const year = parseInt(e.target.value, 10);
+      this.slider_currentValue = `${year}`;
+      allInstances[id].updateData(year);
+    });
+
+
   }
 
 
@@ -193,65 +280,49 @@ this.legendAddListener()
     }
   }
 
-  static test12345(point, param2) {
-    try {
-      console.log("primary_map");
-      console.log(primary_map.feature_dataset.title);
-      console.log(primary_map.legende.name);
-      const primary_map_data = primary_map.map.queryRenderedFeatures(
-        point,
-        param2
-      );
-      console.log("primary_map Title");
-      console.log(
-        primary_map_data[0].properties[primary_map.feature_dataset.title]
-      );
-      const secondary_map_data = secondary_map.map.queryRenderedFeatures(
-        point,
-        param2
-      );
-      console.log("secondary_map");
-      console.log(secondary_map.feature_dataset.title);
-      console.log(secondary_map.legende.name);
 
-      console.log("secondary_map Title");
-      console.log(
-        secondary_map_data[0].properties[secondary_map.feature_dataset.title]
-      );
-    } catch (error) {
-      //console.log(error);
-    }
-  }
-
-
-  changeLegendScale(data) {
-    console.log("changeLegendScale");
+  changeLegendScaleBar(data) {
+    console.log("changeLegendScaleBar");
     $("#" + this.name + "_legend-min").html(Statistics.getMin(data));
     $("#" + this.name + "_legend-max").html(Statistics.getMax(data));
   }
 
+  legendeShow() {
+    $("#" + this.name + "_legend-bar").show();
+    $("#" + this.name + "_legend-min").show();
+    $("#" + this.name + "_legend-max").show();
+  }
+
   legendeHide() {
-    console.log("legendeHide");
     $("#" + this.name + "_legend-bar").hide();
     $("#" + this.name + "_legend-min").hide();
     $("#" + this.name + "_legend-max").hide();
-  }
-
-  legendDiscreteHide() {
-    $("#" + this.name + "_discrete-legend").hide();
   }
 
   legendDiscreteShow() {
     $("#" + this.name + "_discrete-legend").show();
   }
 
-  legendeShow() {
-    console.log("legendeHide");
-    $("#" + this.name + "_legend-bar").show();
-    $("#" + this.name + "_legend-min").show();
-    $("#" + this.name + "_legend-max").show();
+  legendDiscreteHide() {
+    $("#" + this.name + "_discrete-legend").hide();
+  }
 
+  mapLegendeShow() {
+    $("." + this.name).show();
+    if (!allInstances[this.getActivInstance()].statistics_state.enabled) {
+      this.legendDiscreteHide()
+    }
+  }
+
+  mapLegendeHide() {
+    $("." + this.name).hide();
+  }
+
+  fillTimeslider() {
+    let id = this.getActivInstance()
+    $("#" + this.name + "_timeslide-min").html(allInstances[id]._getFirstYearOfDataset());
+    $("#" + this.name + "_timeslide-max").html(allInstances[id]._getLastYearOfDataset());
+    $("#" + this.name + "_slider").attr('min', allInstances[id]._getFirstYearOfDataset()).attr('max', allInstances[id]._getLastYearOfDataset());
   }
 }
-
 export default Legend;

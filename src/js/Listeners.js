@@ -1,8 +1,5 @@
 import Printer from './Printer';
-import GIFExporter from './GIFExporter';
-
 let activeMap = undefined;
-let myGIFExporter = undefined;
 
 export default class Listeners {
   constructor(document, map) {
@@ -79,12 +76,6 @@ export default class Listeners {
       }
     });
 
-    document.getElementById('slider').addEventListener('input', e => {
-      const year = parseInt(e.target.value, 10);
-      this.slider_currentValue = `${year}`;
-      this.getActiveMap().updateData(year);
-    });
-
     document.getElementById('my_dataviz').addEventListener('click', e => {
       const target = $(e.target);
       //console.log(target)
@@ -102,55 +93,6 @@ export default class Listeners {
       console.log(`your choice : ${dataKey}`);
       // eslint-disable-next-line no-undef
       this.getActiveMap().updateData(dataKey, data);
-    });
-
-    document.getElementById('timeslide-play').addEventListener('click', () => {
-      $('#timeslide-play').hide();
-      $('#timeslide-pause').show();
-
-      const indices = this.getActiveMap()._getYearsOfDataset();
-
-      myGIFExporter = new GIFExporter(this.getActiveMap());
-
-      let i = 0;
-      this.sliderLoop = setInterval(() => {
-        // If the autoPlay was paused..
-        if (this.slider_currentValue !== indices[i] && this.slider_isPaused) {
-          i = indices.indexOf(this.slider_currentValue);
-          this.slider_isPaused = false;
-        }
-
-        $('#slider').val(`${indices[i]}`);
-        this.slider_currentValue = $('#slider').val();
-        this.getActiveMap().updateData(indices[i]);
-
-        myGIFExporter.addFrame();
-
-        $('#download_gif').show();
-
-        // Reset when iterating finished
-        if (i === indices.length - 1) {
-          clearInterval(this.sliderLoop);
-          $('#timeslide-pause').hide();
-          $('#timeslide-play').show();
-          $('#slider').val(`${indices[0]}`);
-          activeMap.updateData(indices[0]);
-        }
-        i++;
-      }, 500);
-    });
-
-    document.getElementById('timeslide-pause').addEventListener('click', () => {
-      $('#timeslide-pause').hide();
-      $('#timeslide-play').show();
-      this.slider_isPaused = true;
-      clearInterval(this.sliderLoop);
-    });
-
-    document.getElementById('download_gif').addEventListener('click', () => {
-      myGIFExporter.downloadGIF(() => {
-        myGIFExporter = undefined; // "destroy" object
-      });
     });
 
     document
@@ -373,8 +315,6 @@ export default class Listeners {
       this.getActiveMap().loadData();
       this.getActiveMap()._hideLegend();
     });
-
-
 
     // document.getElementById('Wahl17_SPD').addEventListener('click', () => {
     //     map.setData('Wahlergebnisse_CDU_1976_bis_2013', 'Wahl17_SPD');
