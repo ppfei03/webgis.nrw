@@ -316,6 +316,7 @@ export default class Listeners {
       this.getActiveMap()._hideLegend();
     });
 
+
     // document.getElementById('Wahl17_SPD').addEventListener('click', () => {
     //     map.setData('Wahlergebnisse_CDU_1976_bis_2013', 'Wahl17_SPD');
     // });

@@ -1,4 +1,4 @@
-import { primary_map, secondary_map } from "./App";
+import { primary_map, secondary_map, duoLegend, dualView } from "./App";
 import { allInstances } from "./Map";
 import Statistics from "./Statistics";
 import GIFExporter from './GIFExporter';
@@ -9,15 +9,30 @@ class Legend {
   year;
   lowColor;
   highColor;
+legendId;
+
+  addDuoLegend(){
+    //$(".legend-wrapper").addClass('legend-center')
+
+    //$("body").append($(".legend-wrapper").clone(true).addClass('legend-center'))
+  }
+
 
   constructor(name) {
+
+    if(!duoLegend){
+      this.addDuoLegend()
+      this.legendId="";
+    }else{
+      this.legendId="2"
+    }
     this.name = name;
 
-    $("#legend-heading").append("<h3 id='" + this.name + "_legend-heading' class='legend-title editable " + this.name + "'></h3>");
+    $("#legend-heading" + this.legendId).append("<h3 id='" + this.name + "_legend-heading' class='legend-title editable " + this.name + "'></h3>");
 
-    $("#year").append("<h5 id='" + this.name + "_year' class='" + this.name + "'></h5>");
+    $("#year"+ this.legendId).append("<h5 id='" + this.name + "_year' class='" + this.name + "'></h5>");
 
-    $("#legend-scale-bar").append(
+    $("#legend-scale-bar"+ this.legendId).append(
       "<div id='" + this.name + "_legend' class='" + this.name + "'>" +
       "<div class='legend-bar'id='" + this.name + "_legend-bar'></div>" +
       "<div class='labels'>" +
@@ -26,7 +41,7 @@ class Legend {
       "</div>" +
       "</div>");
 
-    $("#legend-scale-bar").append(
+    $("#legend-scale-bar"+ this.legendId).append(
       "<div id='" + this.name + "_discrete-legend' class='discrete-legend " + this.name + "' style=\"display: none;\">" +
       "<ul class=\"legend-labels\">" +
       "<li><span style=\"background:#F1EEF6;\"></span><br/>0 - 20%</li>" +
@@ -37,7 +52,7 @@ class Legend {
       "</ul>" +
       "</div>");
 
-    $("#map_data_option").append(
+    $("#map_data_option"+ this.legendId).append(
       "<div class='" + this.name + "'>" +
       "<div id=\"" + this.name + "_border_option\" class=\"option-menue\">" +
       "<label>Grenzen anpassen auf </label>" +
@@ -49,8 +64,8 @@ class Legend {
       "<input type=\"radio\" name=\"options\"  autoComplete=\"off\">Daten" +
       "</label>" +
       "</div>" +
-      "<i class=\"material-icons right-middle\" data-toggle=\"tooltip\" data-placement=\"top\"" +
-      "data-html=\"true\" title=\"\"data-original-title=\"Jahr = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br>Daten = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst.\"style=\"margin-top: 0px;\">info</i>" +
+      "<i class=\"material-icons right-middle\" data-toggle='tooltip' data-placement=\"top\"" +
+      "data-html=\"true\" title=\"<b>Jahr</b> = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br><b>Daten</b> = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst.\"style=\"margin-top: 0px;\">info</i>" +
       "</div>" +
       " <div class=\"option-menue\">" +
       "<label>Veränderung</label>" +
@@ -59,12 +74,12 @@ class Legend {
       "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_auto_change\" autoComplete=\"off\" checked>automatisch</label>" +
       "<label class=\"btn btn_option btn-info no-margin-bottom\">" +
       "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_click_change\" autoComplete=\"off\">Auf Klick</label>" +
-      "</div><i class=\"material-icons right-middle\" data-toggle=\"tooltip\" data-placement=\"top\"data-html=\"true\" title=\"\"data-original-title=\"automatisch = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br>Auf Klick = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.\"style=\"margin-top: 0px;\">info</i>" +
+      "</div><i class=\"material-icons right-middle\" data-toggle='tooltip' data-placement=\"top\"data-html=\"true\" title=\"<b>automatisch</b> = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br><b>Auf Klick</b> = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.\"style=\"margin-top: 0px;\">info</i>" +
       "</div>" +
       "</div>"
     );
 
-    $("#timeslider").append(
+    $("#timeslider"+ this.legendId).append(
       '<div id="' + this.name + '_timeslider" class="timeslider ' + this.name + '" style="display: none">' +
       ' <i id="' + this.name + '_timeslide-play" class="material-icons timeslide-control">play_arrow</i>' +
       '<i id="' + this.name + '_timeslide-pause" class="material-icons timeslide-control" style="display: none">pause</i>' +
@@ -80,18 +95,29 @@ class Legend {
       '</div>'
     );
 
+    $("#data-info"+ this.legendId).append('<div id="' + this.name + '_data-info" className="row">\n' +
+      '      <p className="col-md-12">Bewege die Maus über die Kreise</p>\n' +
+      '    </div>')
+
+
     this.legendAddListener(this.getActivInstance())
 
   }
 
   legendActivate() {
-    console.log(allInstances)
+
+    //console.log(allInstances)
+    if(!duoLegend){
     allInstances.forEach(function(map) {
       map.legende.mapLegendeHide()
-    });
-    $("#" + this.name + "_legend-heading").html(this.feature_dataset.title);
-    $("#" + this.name + "_year").html(this.year);
-    $("#" + this.name + "_legend-bar").css("background-image", `linear-gradient(to right, ${this.lowColor}, ${this.highColor})`);
+    });}
+
+try{
+  $("#" + this.name + "_legend-heading").html(this.feature_dataset.title);
+  $("#" + this.name + "_year").html(this.year);
+  $("#" + this.name + "_legend-bar").css("background-image", `linear-gradient(to right, ${this.lowColor}, ${this.highColor})`);
+}catch(error){}
+
 
     allInstances[this.getActivInstance()].legende.mapLegendeShow();
   }
@@ -101,16 +127,17 @@ class Legend {
 
     if (allInstances[0].container === this.name) {
       id = 0
-    } else if (allInstances[1].container === this.name) {
-      id = 1
     } else {
-      id = 2
+      id = 1
     }
     return id
   }
 
   legendAddListener(id) {
     console.log('legendAddListener')
+
+    $('[data-toggle="tooltip"]').tooltip()
+
 
     document.getElementById(this.name + '_border_year').addEventListener('click', () => {
       const year = parseInt($("#" + this.name + "_year").text(), 10);
@@ -122,6 +149,7 @@ class Legend {
     });
 
     document.getElementById(this.name + '_border_data').addEventListener('click', () => {
+      console.log(this.name + '_border_data')
       const year = parseInt($("#" + this.name + "_year").text(), 10);
       allInstances[id].alldata = {
         data: false,
@@ -273,12 +301,14 @@ class Legend {
 
         }</strong> ${unit}</em></p>`;
 
-      document.getElementById("pd").innerHTML = myString;
+      //document.getElementById("pd").innerHTML = myString;
+      $("#" + this.name + "_data-info").html(myString);
     } catch (error) {
-      console.log(error);
 
     }
   }
+
+
 
 
   changeLegendScaleBar(data) {

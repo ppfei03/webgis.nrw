@@ -21,9 +21,6 @@ let showLegendOnStart = false;
 
 export const allInstances = [];
 
-// min and max colors
-let lowColor = '#80BCFF';
-let highColor = '#1A5FAC';
 
 
 
@@ -91,6 +88,9 @@ export default class Map {
       type: '',
       colorStops: []
     };
+
+    this.lowColor = '#80BCFF';
+    this.highColor = '#1A5FAC';
 
     mapboxgl.accessToken = mapboxToken;
     this.map = new mapboxgl.Map({
@@ -178,9 +178,9 @@ export default class Map {
               if (states[0].properties.dataArray !== undefined) {
                 this._updatePipe(JSON.parse(states[0].properties.dataArray));
               }
+
             } else {
-              document.getElementById('pd').innerHTML =
-                '<p class="col-md-12">Bewege die Maus über die Kreise</p>';
+              //document.getElementById('pd').innerHTML ='<p class="col-md-12">Bewege die Maus über die Kreise</p>';
             }
           }
         }
@@ -334,10 +334,10 @@ export default class Map {
    */
   changeColor(type, value) {
     if (type === 'low') {
-      lowColor = value;
+      this.lowColor = value;
       this.legende.lowColor = value;
     } else if (type === 'high') {
-      highColor = value;
+      this.highColor = value;
       this.legende.highColor = value;
     }
     this.legende.legendActivate();
@@ -347,8 +347,8 @@ export default class Map {
         this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
           property: this.feature_dataset.title,
           stops: [
-            [Statistics.getMin(this._getData()), lowColor],
-            [Statistics.getMax(this._getData()), highColor]
+            [Statistics.getMin(this._getData()), this.lowColor],
+            [Statistics.getMax(this._getData()), this.highColor]
           ]
         });
       }
@@ -356,7 +356,7 @@ export default class Map {
     if (this.map.getLayer('feinstaub_band_layer')) {
       this.map.setPaintProperty('feinstaub_band_layer', 'fill-color', {
         property: 'DN',
-        stops: [[0, lowColor], [45, highColor]]
+        stops: [[0, this.lowColor], [45, this.highColor]]
       });
     }
 
@@ -490,9 +490,9 @@ export default class Map {
             ['linear'],
             ['heatmap-density'],
             0,
-            lowColor,
+            this.lowColor,
             1,
-            highColor
+            this.highColor
           ],
           // Transition from heatmap to circle layer by zoom level
           'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 4, 1, 8, 0]
@@ -519,7 +519,7 @@ export default class Map {
       };
       this.map.setPaintProperty('KiTasNRW', 'circle-color', {
         property: parameter,
-        stops: [[0, lowColor], [max[parameter], highColor]]
+        stops: [[0, this.lowColor], [max[parameter], this.highColor]]
       });
       this.map.setPaintProperty('KiTasNRW', 'circle-stroke-width', 0);
     }
@@ -561,6 +561,7 @@ export default class Map {
    */
   updateData(year = this._getFirstYearOfDataset(), data) {
     console.log('updateData');
+    console.log(this);
 
     this.legende.year = year;
     this.legende.legendActivate();
@@ -612,7 +613,12 @@ export default class Map {
         dataInMap.length
       );
       const stepColor = [];
-      const colors = colorLerp(lowColor, highColor, allDataInMap.length, 'hex');
+      const colors = colorLerp(
+        this.lowColor,
+        this.highColor,
+        allDataInMap.length,
+        'hex'
+      );
       colors.forEach((dataInMap, i) => {
         const string = [];
         string.push(allDataInMap[i]);
@@ -633,8 +639,8 @@ export default class Map {
       this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
         property: this.feature_dataset.title,
         stops: [
-          [Statistics.getMin(this._getData()), lowColor],
-          [Statistics.getMax(this._getData()), highColor]
+          [Statistics.getMin(this._getData()), this.lowColor],
+          [Statistics.getMax(this._getData()), this.highColor]
         ]
       });
     }
@@ -684,7 +690,7 @@ export default class Map {
         paint: {
           'fill-color': {
             property: 'DN',
-            stops: [[0, lowColor], [45, highColor]]
+            stops: [[0, this.lowColor], [45, this.highColor]]
           },
           'fill-opacity': 0.8
         }
@@ -777,8 +783,8 @@ export default class Map {
     this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
       property: this.feature_dataset.title,
       stops: [
-        [Statistics.getMin(this._getData()), lowColor],
-        [Statistics.getMax(this._getData()), highColor]
+        [Statistics.getMin(this._getData()), this.lowColor],
+        [Statistics.getMax(this._getData()), this.highColor]
       ]
     });
     this._hideLegend();
@@ -797,9 +803,11 @@ export default class Map {
   }
 
   _applyStatistic(classes) {
+
+    console.log('Ich wurde aufgerufen')
     const colors = colorLerp(
-      lowColor,
-      highColor,
+      this.lowColor,
+      this.highColor,
       Number(document.getElementById('stats_classes').value),
       'hex'
     );
@@ -970,8 +978,8 @@ export default class Map {
     this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
       property: data.title,
       stops: [
-        [Statistics.getMin(this._getData()), lowColor],
-        [Statistics.getMax(this._getData()), highColor]
+        [Statistics.getMin(this._getData()), this.lowColor],
+        [Statistics.getMax(this._getData()), this.highColor]
       ]
     });
 

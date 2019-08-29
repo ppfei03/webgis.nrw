@@ -140,15 +140,30 @@
                     <h5>Kartenmodus</h5>
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-light active">
-                            <input type="radio" name="options" id="mode-standard" autocomplete="off" checked>Standard
+                            <input type="radio" name="options" id="mode-standard" autocomplete="off" checked>eine Karte
                         </label>
                         <label class="btn btn-light">
-                            <input type="radio" name="options" id="mode-dual" autocomplete="off">Dual View
+                            <input type="radio" name="options" id="mode-dual" autocomplete="off">zwei Karten
                         </label>
                         <label class="btn btn-light">
-                            <input type="radio" name="options" id="mode-split" autocomplete="off">Split View
+                            <input type="radio" name="options" id="mode-split" autocomplete="off">Karte geteilt
                         </label>
                     </div>
+                    <div id="legendMapOption" style="display: none">
+                    <h6>Legendenmodus</h6>
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-light active" id="legend-standard">
+                            <input type="radio" name="options"  autocomplete="off" checked>Standard
+                        </label>
+                        <label class="btn btn-light" id="legend-duo">
+                            <input type="radio" name="options"  autocomplete="off">Doppel Legende
+                        </label>
+                        </div>
+                    <i class="material-icons right-middle" data-toggle="tooltip" data-placement="top"
+                       data-html="true"
+                       title="<b>Standard</b> = Die Legende befindet sich am rechten Rand und gibt Informationen über beide Karten wieder. <br><b>Doppel Legende</b> = Die Legende wird in der jeweiligen Karte Angezeigt.">info</i>
+
+                </div>
                 </div>
             </li>
             <li class="nav-item dropup">
@@ -384,7 +399,7 @@
 
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <i class="material-icons" id="recordIcon" style="color: red;display: none;padding-top: 8px;">fiber_manual_record</i>
+                <i class="material-icons" id="recordIcon" style="color: red;padding-top: 8px;"></i>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="toggleLegalAdvice">Impressum</a>
@@ -448,10 +463,8 @@
                     </div>
                 </div>
             </div>
-            <div class='info'>
-                <div id='pd' class="row">
-                    <p class="col-md-12">Bewege die Maus über die Kreise</p>
-                </div>
+            <div class='info'id="data-info">
+
             </div>
         </div>
         <div class="flex-timeslider">
