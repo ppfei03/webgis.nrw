@@ -1,7 +1,8 @@
-import { primary_map, secondary_map, duoLegend, dualView } from "./App";
+import { primary_map, secondary_map, duoLegend, splitView,dualView } from "./App";
 import { allInstances } from "./Map";
 import Statistics from "./Statistics";
-import GIFExporter from './GIFExporter';
+import GIFExporter from "./GIFExporter";
+
 let myGIFExporter = undefined;
 
 class Legend {
@@ -9,30 +10,18 @@ class Legend {
   year;
   lowColor;
   highColor;
-legendId;
-
-  addDuoLegend(){
-    //$(".legend-wrapper").addClass('legend-center')
-
-    //$("body").append($(".legend-wrapper").clone(true).addClass('legend-center'))
-  }
+  legendId="";
 
 
   constructor(name) {
 
-    if(!duoLegend){
-      this.addDuoLegend()
-      this.legendId="";
-    }else{
-      this.legendId="2"
-    }
     this.name = name;
 
     $("#legend-heading" + this.legendId).append("<h3 id='" + this.name + "_legend-heading' class='legend-title editable " + this.name + "'></h3>");
 
-    $("#year"+ this.legendId).append("<h5 id='" + this.name + "_year' class='" + this.name + "'></h5>");
+    //$("#year" + this.legendId).append("<h5 id='" + this.name + "_year' class='" + this.name + "'></h5>");
 
-    $("#legend-scale-bar"+ this.legendId).append(
+    $("#legend-scale-bar" + this.legendId).append(
       "<div id='" + this.name + "_legend' class='" + this.name + "'>" +
       "<div class='legend-bar'id='" + this.name + "_legend-bar'></div>" +
       "<div class='labels'>" +
@@ -41,7 +30,7 @@ legendId;
       "</div>" +
       "</div>");
 
-    $("#legend-scale-bar"+ this.legendId).append(
+    $("#legend-scale-bar" + this.legendId).append(
       "<div id='" + this.name + "_discrete-legend' class='discrete-legend " + this.name + "' style=\"display: none;\">" +
       "<ul class=\"legend-labels\">" +
       "<li><span style=\"background:#F1EEF6;\"></span><br/>0 - 20%</li>" +
@@ -52,8 +41,8 @@ legendId;
       "</ul>" +
       "</div>");
 
-    $("#map_data_option"+ this.legendId).append(
-      "<div class='" + this.name + "'>" +
+    $("#map_data_option" + this.legendId).append(
+      "<div class='" + this.name + "' id=\"" + this.name + "_map_data_option\">" +
       "<div id=\"" + this.name + "_border_option\" class=\"option-menue\">" +
       "<label>Grenzen anpassen auf </label>" +
       "<div class=\"btn-group btn-group-toggle\" data-toggle=\"buttons\">" +
@@ -79,89 +68,92 @@ legendId;
       "</div>"
     );
 
-    $("#timeslider"+ this.legendId).append(
-      '<div id="' + this.name + '_timeslider" class="timeslider ' + this.name + '" style="display: none">' +
-      ' <i id="' + this.name + '_timeslide-play" class="material-icons timeslide-control">play_arrow</i>' +
-      '<i id="' + this.name + '_timeslide-pause" class="material-icons timeslide-control" style="display: none">pause</i>' +
-      '<div class="grow">' +
-      '<div class="labels">' +
-      '<label id="' + this.name + '_timeslide-min" class="timeslide-min">1962</label>' +
-      '<label id="' + this.name + '_timeslide-max" class="timeslide-max">2010</label>' +
-      '</div>' +
-      '<input id="' + this.name + '_slider" class="slider" type="range" min="0" max="100" step="1" value="0"/>' +
-      '</div>' +
-      '<i id="' + this.name + '_download_gif" class="material-icons timeslide-control" style="display: none">gif</i>' +
-      '<div id="' + this.name + '_download_gif_spinner" class="download_gif_spinner" style="display: none"></div>' +
-      '</div>'
+    $("#timeslider" + this.legendId).append(
+      "<div id=\"" + this.name + "_timeslider\" class=\"timeslider " + this.name + "\" style=\"display: none\">" +
+      " <i id=\"" + this.name + "_timeslide-play\" class=\"material-icons timeslide-control\">play_arrow</i>" +
+      "<i id=\"" + this.name + "_timeslide-pause\" class=\"material-icons timeslide-control\" style=\"display: none\">pause</i>" +
+      "<div class=\"grow\">" +
+      "<div class=\"labels\">" +
+      "<label id=\"" + this.name + "_timeslide-min\" class=\"timeslide-min\">1962</label>" +
+      "<label id=\"" + this.name + "_timeslide-center\" class=\"timeslide-center\"></label>" +
+      "<label id=\"" + this.name + "_timeslide-max\" class=\"timeslide-max\">2010</label>" +
+      "</div>" +
+      "<input id=\"" + this.name + "_slider\" class=\"slider\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"0\"/>" +
+      "</div>" +
+      "<i id=\"" + this.name + "_download_gif\" class=\"material-icons timeslide-control\" style=\"display: none\">gif</i>" +
+      "<div id=\"" + this.name + "_download_gif_spinner\" class=\"download_gif_spinner\" style=\"display: none\"></div>" +
+      "</div>"
     );
 
-    $("#data-info"+ this.legendId).append('<div id="' + this.name + '_data-info" className="row">\n' +
-      '      <p className="col-md-12">Bewege die Maus über die Kreise</p>\n' +
-      '    </div>')
+    $("#data-info" + this.legendId).append("<div id=\"" + this.name + "_data-info\" class=\"row data-info " + this.name + "\" >\n" +
+      "      <p className=\"col-md-12\">Bewege die Maus über die Kreise</p>\n" +
+      "    </div>");
 
 
-    this.legendAddListener(this.getActivInstance())
+    this.legendAddListener(this.getActivInstance());
 
   }
 
   legendActivate() {
 
-    //console.log(allInstances)
-    if(!duoLegend){
-    allInstances.forEach(function(map) {
-      map.legende.mapLegendeHide()
-    });}
+    if(allInstances[this.getActivInstance()].feature_dataset === undefined){
+      this.mapLegendeHide();
+      if (!duoLegend) {
+      $(".data-info").hide()}
+      $("#" + this.name + "_data-info").show()
+    }else{
+      if (!duoLegend) {
+        allInstances.forEach(function(map) {
+          map.legende.mapLegendeHide();
+        });
+      }
+      allInstances[this.getActivInstance()].legende.mapLegendeShow();
+    }
 
-try{
-  $("#" + this.name + "_legend-heading").html(this.feature_dataset.title);
-  $("#" + this.name + "_year").html(this.year);
-  $("#" + this.name + "_legend-bar").css("background-image", `linear-gradient(to right, ${this.lowColor}, ${this.highColor})`);
-}catch(error){}
-
-
-    allInstances[this.getActivInstance()].legende.mapLegendeShow();
+    try {
+      $("#" + this.name + "_legend-bar").css("background-image", `linear-gradient(to right, ${this.lowColor}, ${this.highColor})`);
+    } catch (error) {
+    }
   }
 
   getActivInstance() {
     let id;
 
     if (allInstances[0].container === this.name) {
-      id = 0
+      id = 0;
     } else {
-      id = 1
+      id = 1;
     }
-    return id
+    return id;
   }
 
   legendAddListener(id) {
-    console.log('legendAddListener')
+    console.log("legendAddListener");
 
-    $('[data-toggle="tooltip"]').tooltip()
+    $("[data-toggle=\"tooltip\"]").tooltip();
 
 
-    document.getElementById(this.name + '_border_year').addEventListener('click', () => {
-      const year = parseInt($("#" + this.name + "_year").text(), 10);
+    document.getElementById(this.name + "_border_year").addEventListener("click", () => {
       allInstances[id].alldata = {
         data: false,
         enabled: false
       };
-      allInstances[id].updateData(year);
+      allInstances[id].updateData(this.year);
     });
 
-    document.getElementById(this.name + '_border_data').addEventListener('click', () => {
-      console.log(this.name + '_border_data')
-      const year = parseInt($("#" + this.name + "_year").text(), 10);
+    document.getElementById(this.name + "_border_data").addEventListener("click", () => {
+      //console.log(this.name + "_border_data");
       allInstances[id].alldata = {
         data: false,
         enabled: true
       };
-      allInstances[id].updateData(year);
+      allInstances[id].updateData(this.year);
     });
 
-
-    document.getElementById(this.name + '_timeslide-play').addEventListener('click', () => {
-      $('#' + this.name + '_timeslide-play').hide();
-      $('#' + this.name + '_timeslide-pause').show();
+    document.getElementById(this.name + "_timeslide-play").addEventListener("click", () => {
+      console.log('timeslide-play')
+      $("#" + this.name + "_timeslide-play").hide();
+      $("#" + this.name + "_timeslide-pause").show();
 
       const indices = allInstances[id]._getYearsOfDataset();
 
@@ -175,45 +167,61 @@ try{
           this.slider_isPaused = false;
         }
 
-        $('#' + this.name + '_slider').val(`${indices[i]}`);
-        this.slider_currentValue = $('#' + this.name + '_slider').val();
+        $("#" + this.name + "_slider").val(`${indices[i]}`);
+        this.slider_currentValue = $("#" + this.name + "_slider").val();
         allInstances[id].updateData(indices[i]);
 
         myGIFExporter.addFrame();
 
-        $('#' + this.name + '_download_gif').show();
+        $("#" + this.name + "_download_gif").show();
 
         // Reset when iterating finished
         if (i === indices.length - 1) {
           clearInterval(this.sliderLoop);
-          $('#' + this.name + '_timeslide-pause').hide();
-          $('#' + this.name + '_timeslide-play').show();
-          $('#' + this.name + '_slider').val(`${indices[0]}`);
+          $("#" + this.name + "_timeslide-pause").hide();
+          $("#" + this.name + "_timeslide-play").show();
+          $("#" + this.name + "_slider").val(`${indices[0]}`);
           allInstances[id].updateData(indices[0]);
         }
         i++;
       }, 500);
     });
 
-    document.getElementById(this.name + '_timeslide-pause').addEventListener('click', () => {
-      $('#' + this.name + '_timeslide-pause').hide();
-      $('#' + this.name + '_timeslide-play').show();
+    document.getElementById(this.name + "_timeslide-pause").addEventListener("click", () => {
+      $("#" + this.name + "_timeslide-pause").hide();
+      $("#" + this.name + "_timeslide-play").show();
       this.slider_isPaused = true;
       clearInterval(this.sliderLoop);
     });
 
-    document.getElementById(this.name + '_download_gif').addEventListener('click', () => {
+    document.getElementById(this.name + "_download_gif").addEventListener("click", () => {
       myGIFExporter.downloadGIF(() => {
         myGIFExporter = undefined; // "destroy" object
       });
     });
 
-    document.getElementById(this.name + '_slider').addEventListener('input', e => {
-      const year = parseInt(e.target.value, 10);
-      this.slider_currentValue = `${year}`;
-      allInstances[id].updateData(year);
+    document.getElementById(this.name + "_slider").addEventListener("input", e => {
+      this.year = parseInt(e.target.value, 10);
+      this.slider_currentValue = `${this.year}`;
+      $("#" + this.name + "_timeslide-center").html(this.year);
+      allInstances[id].updateData(this.year);
+      //this.singleLegend(this.point,this.param2)
     });
+    try{
 
+      $('#legend_collapse').on('click', () => {
+        $('#legend_collapse').toggleClass('rotate');
+      });
+      $('#more_collapse').on('click', () => {
+        $('.arrowToggle').toggleClass('rotate');
+      });
+    $('#legend_collapse_center').on('click', () => {
+      $('#legend_collapse_center').toggleClass('rotate');
+    });
+    $('#more_collapse_center').on('click', () => {
+      $('.more_collapse_center').toggleClass('rotate');
+    });
+}catch(error){}
 
   }
 
@@ -252,7 +260,7 @@ try{
 
 
       let myString =
-        `<h4 class="col-md-12"><strong>${
+        `<h4 class="col-md-12" id="Gemeindename"><strong>${
           primary_map_data[0].properties.Gemeindename
         }</strong></h4>` +
         `<p class="col-md-6">links : <strong><em>${
@@ -271,45 +279,103 @@ try{
 
   }
 
-  legendForStandardView(point, param2) {
-    //console.log(this)
-    //console.log(allInstances)
+  singleLegend(point, param2) {
+
     try {
-      //$('#legend-heading').html(primary_map.feature_dataset.title)
+      this.point = point;
+      this.param2 = param2;
+      let myDataString;
 
-      const primary_map_data = primary_map.map.queryRenderedFeatures(
-        point,
-        param2
-      );
 
-      let unit;
+      if (!duoLegend && ( allInstances.length > 1)) {
+        let map_data="";
+        let map_data2="";
+        try{
+        map_data = allInstances[0].map.queryRenderedFeatures(
+          point,
+          allInstances[0].legende.param2
+        );
+        map_data2 = allInstances[1].map.queryRenderedFeatures(
+          point,
+          allInstances[1].legende.param2
+        );
+        }catch(error){
+          }
+        myDataString = this.generateMapInformationStringFromData([map_data, map_data2], "col-md-6");
+      } else {
+        let map_data = allInstances[this.getActivInstance()].map.queryRenderedFeatures(
+          this.point,
+          this.param2
+        );
+        myDataString = this.generateMapInformationStringFromData([map_data], "col-md-12");
+      }
+
+      let myString =
+        `<div class="container"><h2 class="col-md-12" style="height: 76px" align="center"><strong>${
+          myDataString[0]
+        }</strong></h2>` + myDataString[1] +
+        `</div>`;
+      $("#" + this.name + "_timeslide-center").html('');
+
+      $("#" + this.name + "_data-info").html(myString);
+
+    } catch (error) {
+console.log(error)
+    }
+  }
+
+  generateMapInformationStringFromData(mapDataArray, colFormat) {
+    let string = [];
+    let stringFinal;
+    let id;
+
+    for (let i = 0; i<mapDataArray.length; i++) {
+      try{
+      let map_data = mapDataArray[i], unit, s,data;//
+      if(duoLegend){
+        id=this.getActivInstance();
+      }else{
+        id=i;
+      }
+
       if (
-        typeof primary_map_data[0].properties[primary_map.feature_dataset.title] ===
+        typeof map_data[0].properties[allInstances[id].getTitle()] ===
         "string"
       ) {
         unit = "";
       } else {
-        unit = primary_map.feature_dataset.unit;
+        unit = allInstances[id].legende.feature_dataset.unit;
+      }
+      let yearData=allInstances[id].legende.year;
+      if (map_data[0].properties[allInstances[id].getTitle()] === "null") {
+        data = "Keine Daten verfügbar";
+      } else {
+        //console.log(map_data[0].properties)
+        //console.log(allInstances[id].getTitle())
+        data = map_data[0].properties[allInstances[id].getTitle()];
       }
 
-      let myString =
-        `<h4 class="col-md-12"><strong>${
-          primary_map_data[0].properties.Gemeindename
-        }</strong></h4>` +
-        `<p class="col-md-6">links : <strong><em>${
-          primary_map_data[0].properties[primary_map.feature_dataset.title]
-
-        }</strong> ${unit}</em></p>`;
-
-      //document.getElementById("pd").innerHTML = myString;
-      $("#" + this.name + "_data-info").html(myString);
-    } catch (error) {
-
+      string.push(`<div class=${colFormat}><p ><strong><em>${allInstances[id].getTitle()}</strong></em></p></div>`);
+      string.push(`<div class=${colFormat}><h4><strong><em>${data}</strong> ${unit}</em></h4></div>`);
+      string.push(`<div class=${colFormat}><h5><em id="`+this.name +`_year">${yearData}</em></h5></div>`);
+    }catch(error){
+        console.log('generateMapInformationStringFromData :: ' + error)
+        string.push(`<div class=${colFormat}><p >Kein Thema vorhanden</p></div>`);
+        string.push(`<div class=${colFormat}></div>`);
+        string.push(`<div class=${colFormat}></div>`);
+      }
     }
+
+    if (string.length>3) {
+      stringFinal = '<div class="row">'+string[0] + string[3] +'</div><div class="row">'+ string[1] + string[4]+'</div><div class="row">'+ string[2] + string[5]+'</div>';
+    } else if(string.length>1) {
+      stringFinal = '<div class="row">'+string[0] + '</div><div class="row">'+ string[1] +'</div><div class="row">'+ string[2] + '</div>';
+    }else{
+      stringFinal='<div class="row">'+string[0] + '</div>'
+    }
+
+    return [mapDataArray[0][0].properties.Gemeindename, stringFinal];
   }
-
-
-
 
   changeLegendScaleBar(data) {
     console.log("changeLegendScaleBar");
@@ -318,41 +384,66 @@ try{
   }
 
   legendeShow() {
+    console.log("legendeShow");
+
     $("#" + this.name + "_legend-bar").show();
     $("#" + this.name + "_legend-min").show();
     $("#" + this.name + "_legend-max").show();
   }
 
   legendeHide() {
+    console.log("legendeHide");
+
     $("#" + this.name + "_legend-bar").hide();
     $("#" + this.name + "_legend-min").hide();
     $("#" + this.name + "_legend-max").hide();
   }
 
   legendDiscreteShow() {
+    console.log("legendDiscreteShow");
+
     $("#" + this.name + "_discrete-legend").show();
   }
 
   legendDiscreteHide() {
+    console.log("legendDiscreteHide");
+
     $("#" + this.name + "_discrete-legend").hide();
   }
 
   mapLegendeShow() {
+    console.log("mapLegendeShow");
+
     $("." + this.name).show();
     if (!allInstances[this.getActivInstance()].statistics_state.enabled) {
-      this.legendDiscreteHide()
+      this.legendDiscreteHide();
     }
   }
 
   mapLegendeHide() {
+    console.log("mapLegendeShow");
+
     $("." + this.name).hide();
   }
 
+  mapLegendeInfoDataClear() {
+    console.log("mapLegendeShow");
+
+    $("#" + this.name+"_data-info").filter(function( index ) {
+      return $( ".row", this ).remove()
+    });
+  }
+
+
+
   fillTimeslider() {
-    let id = this.getActivInstance()
+    console.log("fillTimeslider");
+
+    let id = this.getActivInstance();
     $("#" + this.name + "_timeslide-min").html(allInstances[id]._getFirstYearOfDataset());
     $("#" + this.name + "_timeslide-max").html(allInstances[id]._getLastYearOfDataset());
-    $("#" + this.name + "_slider").attr('min', allInstances[id]._getFirstYearOfDataset()).attr('max', allInstances[id]._getLastYearOfDataset());
+    $("#" + this.name + "_slider").attr("min", allInstances[id]._getFirstYearOfDataset()).attr("max", allInstances[id]._getLastYearOfDataset());
   }
 }
+
 export default Legend;

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -413,68 +412,39 @@
 </div>
 
 <div class="legend-wrapper">
-    <i id='legend_collapse' class="material-icons right-middle rotate-down" data-toggle="collapse" data-target=".legend"
+    <i id='legend_collapse' class="legendArrowToggle material-icons right-middle rotate-down" data-toggle="collapse" data-target=".legend"
        aria-expanded="true">keyboard_arrow_down</i>
     <div class='legend collapse multi-collapse'>
         <div class='my-legend'>
             <div class='legend-info-wrapper' style="display: none">
-                <div id='legend-heading'></div>
-                <div id='year'></div>
-
+                <div class='info'id="data-info">
+                </div>
+<!--                <div id='legend-heading'></div>-->
+<!--                <div id='year'></div>-->
                 <div id='legend-scale-bar' class="scale-legend">
                 </div>
+                <p id="more_collapse"class="moreArrowToggle"data-toggle="collapse" data-target=".mapSettings">
+                    <i class="arrowToggle material-icons rotate-down"aria-expanded="true">keyboard_arrow_down</i>
+                    ...mehr...
+                    <i class="arrowToggle material-icons rotate-down"aria-expanded="true">keyboard_arrow_down</i>
+                </p>
+                <div class="mapSettings collapse multi-collapse">
+                <div class="flex-timeslider">
+                    <div class='timeslider-wrapper'>
+                        <div id='timeslider'>
 
+
+                        </div>
+                    </div>
+                </div>
                 <div>
                     <div id="map_data_option" class="option-menue">
-
-                        <!--<div id="border_option" class="option-menue">
-                            <label>Grenzen anpassen auf </label>
-                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label class="btn btn-info active no-margin-bottom" id="border_year2">
-                                    <input type="radio" name="options" id="border_year" autocomplete="off" checked>Jahr
-                                </label>
-                                <label class="btn btn-info no-margin-bottom" id="border_data2">
-                                    <input type="radio" name="options" id="border_data" autocomplete="off">Daten
-                                </label>
-                            </div>
-
-                            <i class="material-icons classification-info" data-toggle="tooltip" data-placement="top"
-                               data-html="true" title=""
-                               data-original-title="Jahr = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br>Daten = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst."
-                               style="margin-top: 0px;">info</i>
-                        </div>
-                        <div class="option-menue">
-
-                            <label>Veränderung</label>
-                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                                <label class="btn btn-info active no-margin-bottom">
-                                    <input type="radio" name="options" id="auto_change" autocomplete="off" checked>automatisch
-                                </label>
-                                <label class="btn btn-info no-margin-bottom">
-                                    <input type="radio" name="options" id="click_change" autocomplete="off">Auf Klick
-                                </label>
-                            </div>
-                            <i class="material-icons classification-info" data-toggle="tooltip" data-placement="top"
-                               data-html="true" title=""
-                               data-original-title="automatisch = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br>Auf Klick = Das Diagramm ändert sich nur bei Klick auf einen der Kreise."
-                               style="margin-top: 0px;">info</i>
-                        </div>-->
-
                     </div>
                 </div>
             </div>
-            <div class='info'id="data-info">
-
             </div>
         </div>
-        <div class="flex-timeslider">
-            <div class='timeslider-wrapper'>
-                <div id='timeslider'>
 
-
-                </div>
-            </div>
-        </div>
 
 
         <!-- Create a div where the graph will take place -->

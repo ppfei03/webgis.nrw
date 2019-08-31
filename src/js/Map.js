@@ -21,9 +21,6 @@ let showLegendOnStart = false;
 
 export const allInstances = [];
 
-
-
-
 // set the dimensions and margins of the graph
 const width = 370,
   height = 370,
@@ -118,17 +115,11 @@ export default class Map {
             .addTo(this.map);
         }
         if (!this.getMoveOverViewSetting()) {
-          if (App.dualView || App.splitView) {
-            this.legende.legendActivate();
-            this.legende.legendForDualSplitView(e.point, {
-              layers: ['kreisgrenzen']
-            });
-          } else {
-            this.legende.legendActivate();
-            this.legende.legendForStandardView(e.point, {
-              layers: ['kreisgrenzen']
-            });
-          }
+          this.legende.legendActivate();
+          this.legende.singleLegend(e.point, {
+            layers: ['kreisgrenzen']
+          });
+
           const states = this.map.queryRenderedFeatures(e.point, {
             layers: ['kreisgrenzen']
           });
@@ -155,9 +146,7 @@ export default class Map {
 
       // show current Kreis on legend overlay
       this.map.on('mousemove', e => {
-        //console.log(e)
         if (this.getMoveOverViewSetting()) {
-          //this.map.on('click', e => {
           if (this.map.getLayer('kreisgrenzen')) {
             const states = this.map.queryRenderedFeatures(e.point, {
               layers: ['kreisgrenzen']
@@ -166,21 +155,19 @@ export default class Map {
             if (states.length > 0) {
               if (App.dualView || App.splitView) {
                 this.legende.legendActivate();
-                this.legende.legendForDualSplitView(e.point, {
+                this.legende.singleLegend(e.point, {
                   layers: ['kreisgrenzen']
                 });
               } else {
                 this.legende.legendActivate();
-                this.legende.legendForStandardView(e.point, {
+                this.legende.singleLegend(e.point, {
                   layers: ['kreisgrenzen']
                 });
               }
               if (states[0].properties.dataArray !== undefined) {
                 this._updatePipe(JSON.parse(states[0].properties.dataArray));
               }
-
             } else {
-              //document.getElementById('pd').innerHTML ='<p class="col-md-12">Bewege die Maus über die Kreise</p>';
             }
           }
         }
@@ -204,7 +191,7 @@ export default class Map {
   }
 
   getMinMaxSetting() {
-    return this.alldata.enabled
+    return this.alldata.enabled;
   }
   getMoveOverViewSetting() {
     return $(`#${this.container}_auto_change`)
@@ -228,10 +215,14 @@ export default class Map {
     //   });
 
     /* eslint-disable global-require */
-    this.alldata.data=false
+    this.feature_dataset = undefined;
+    this.alldata.data = false;
     KreiseNRW = require('./../data/nw_dvg2_krs.json');
     if (this.map.getLayer('kreisgrenzen')) {
+      console.log(this.map.getLayer('kreisgrenzen'));
+
       this.map.removeLayer('kreisgrenzen');
+      console.log(this.map.getLayer('kreisgrenzen'));
     }
     try {
       this.map.addSource('KreiseNRW', {
@@ -385,7 +376,6 @@ export default class Map {
     } else {
       this._setDataFromJSON(_data);
     }
-
   }
 
   setPointData(data_source) {
@@ -558,12 +548,10 @@ export default class Map {
   /**
    * @description changes the current year and applies changes to layer
    * @param {String} year
+   * @param data if pieChart available
    */
-  updateData(year = this._getFirstYearOfDataset(), data) {
-    console.log('updateData');
-    console.log(this);
-
-    this.legende.year = year;
+  updateData(year, data) {
+    //this.legende.year = year;
     this.legende.legendActivate();
     current_year = year;
     let maxDataKey = 0;
@@ -581,9 +569,11 @@ export default class Map {
           if (maxDataKey !== 0) {
             kreis.properties[this.feature_dataset.title] = maxDataKey;
           } else {
+
             kreis.properties[this.feature_dataset.title] = Number(
               kreisPop.data[year]
             );
+            kreis.properties.year = year;
           }
         }
       });
@@ -646,6 +636,11 @@ export default class Map {
     }
 
     this.legende.changeLegendScaleBar(this._getData());
+
+    //this.legende.singleLegend(this.legende.point, {
+    //  layers: ['kreisgrenzen']
+    //});
+
   }
 
   /**
@@ -803,8 +798,7 @@ export default class Map {
   }
 
   _applyStatistic(classes) {
-
-    console.log('Ich wurde aufgerufen')
+    console.log('Ich wurde aufgerufen');
     const colors = colorLerp(
       this.lowColor,
       this.highColor,
@@ -877,7 +871,6 @@ export default class Map {
     this.alldata.data = false;
     this.legende.fillTimeslider();
 
-
     // show json in new tab
     /**const win = window.open();
     win.document.write(
@@ -918,9 +911,8 @@ export default class Map {
     }
 
     $('.legend-info-wrapper').show();
-
-
-    this.updateData();
+    this.legende.year = this._getFirstYearOfDataset();
+    this.updateData(this._getFirstYearOfDataset());
   }
 
   /**
@@ -934,7 +926,6 @@ export default class Map {
     this.feature_dataset = data;
     this.legende.year = 'Wahlbeteiligung';
     this.alldata.data = false;
-
 
     $('#my_dataviz').show();
     $('#mapLegend_timeslider').hide();

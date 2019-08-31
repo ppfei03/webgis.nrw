@@ -35,18 +35,13 @@ class App {
 
       $('#map').droppable({
         drop: function(event, ui) {
-          //alert('Drop to map 1')
           listeners.setActiveMap(primary_map);
-          //alert(ui.draggable[0].id)
-
           try{
-            //alert($(`#${ui.draggable[0].id}`).click())
             $(`#${ui.draggable[0].id}`).click()
             $(`#${ui.draggable[0].id}`).click()
           }catch(error){
             console.log(error)
             alert(error)
-
           }
         }
       });
@@ -69,7 +64,6 @@ class App {
         if (this.splitView) {
           allInstances.pop()
           $('#split_map').remove();
-
           $('.mapboxgl-compare').remove();
           this.splitView = false;
         }
@@ -93,9 +87,8 @@ class App {
 
         $('#dual_map').droppable({
           drop: function(event, ui) {
-            //alert('Drop to dual_map')
-
             listeners.setActiveMap(secondary_map);
+            $(`#${ui.draggable[0].id}`).click();
             $(`#${ui.draggable[0].id}`).click();
           }
         });
@@ -135,8 +128,6 @@ class App {
 
         $('#split_map').droppable({
           drop: function(event, ui) {
-           // alert('Drop to split_map')
-
             /**
              * Test on which side the button was dragged.
              * Find the slide position and compare it with the movable position (offset upper left corner) +
@@ -150,7 +141,7 @@ class App {
             } else {
               listeners.setActiveMap(primary_map);
             }
-
+            $(`#${ui.draggable[0].id}`).click();
             $(`#${ui.draggable[0].id}`).click();
           }
         });
@@ -331,6 +322,16 @@ class App {
 
     $('#legend-duo').click(function() {
       if(!duoLegend){
+
+        allInstances[0].legende.mapLegendeHide()
+        allInstances[0].legende.mapLegendeInfoDataClear()
+        allInstances[0].legende.mapLegendeShow()
+
+        allInstances[1].legende.mapLegendeHide()
+        allInstances[1].legende.mapLegendeInfoDataClear()
+        allInstances[1].legende.mapLegendeShow()
+
+
       duoLegend=true;
         console.log('legend-duo')
 
@@ -339,50 +340,81 @@ class App {
       $("body").append($(".legend-wrapper").clone(false).addClass('legend-center').removeClass('legend-standard'));
 
 
-        /**
-         * let $elem = $( ".legend-wrapper" ).data( "arr", [ 1 ] ),
-          $clone = $elem.clone( true ).addClass('legend-center').removeClass('legend-standard')
-          // Deep copy to prevent data sharing
-            .data( "arr", $.extend( [], $elem.data( "arr" ) ) );
-        $("body").append($clone);
-         **/
-
-      $( ".dual_mapLegend, .mapLegend").show()
+      //$( ".dual_mapLegend, .mapLegend, .split_mapLegend").show()
       $( ".legend-center" )
         .filter(function( index ) {
           return $( ".legend", this ).addClass('center')
         }).filter(function( index ) {
-          return $( "i", this ).attr('data-target','.center')
+          return $( ".legendArrowToggle", this ).attr('data-target','.center').attr('id','legend_collapse_center')
+        }).filter(function( index ) {
+          return $( ".moreArrowToggle", this ).attr('data-target','.mapSettings_center').attr('id','more_collapse_center')
+        }).filter(function( index ) {
+          return $( ".arrowToggle", this ).addClass('more_collapse_center')
+        }).filter(function( index ) {
+          return $( ".arrowToggle", this ).removeClass('arrowToggle')
+        }).filter(function( index ) {
+          return $( ".mapSettings", this ).addClass('mapSettings_center')
         }).filter(function( index ) {
           return $( ".dual_mapLegend", this ).remove()
+        }).filter(function( index ) {
+          return $( ".split_mapLegend", this ).remove()
         })
 
       $( ".legend-standard" )
         .filter(function( index ) {
           return $( ".legend", this ).addClass('standard')
         }).filter(function( index ) {
-          return $( "i", this ).attr('data-target','.standard')
+          return $( ".legendArrowToggle", this ).attr('data-target','.standard')
         }).filter(function( index ) {
+        return $( ".moreArrowToggle", this ).attr('data-target','.mapSettings_standard')
+      }).filter(function( index ) {
+        return $( ".mapSettings", this ).addClass('mapSettings_standard')
+      }).filter(function( index ) {
         return $( ".mapLegend", this ).remove()
       })
 
+
         allInstances[0].legende.legendAddListener(0)
+
       }
+
+
+
+
     })
     $('#legend-standard').click(function() {
       if(duoLegend) {
         console.log('legend-standard')
 
         duoLegend = false;
-        $("#pd").addClass('remove')
-        $(".center").append($(".standard").clone(true));
-        $(".center").append($("#pd").clone(true).removeClass('remove'));
+        //$(".center").append($(".standard").clone(true));
+        $("#data-info").append($("#mapLegend_data-info").clone(true));
+        $("#legend-heading").append($("#mapLegend_legend-heading").clone(true));
+        $("#timeslider").append($("#mapLegend_timeslider").clone(true));
+        $("#legend-scale-bar").append($("#mapLegend_legend").clone(true));
+        $("#legend-scale-bar").append($("#mapLegend_discrete-legend").clone(true));
+        $("#map_data_option").append($("#mapLegend_map_data_option").clone(true));
 
-        $('.legend-standard').remove();
-        $('.remove').remove();
-        $(".legend-wrapper").removeClass('legend-center');
-        //$("body").append($(".legend-wrapper").clone(true).addClass('legend-center').removeClass('legend-standard'));
+        $('.legend-center').remove();
+        $( ".legend-standard" )
+          .filter(function( index ) {
+            return $( ".legend", this ).removeClass('standard')
+          }).filter(function( index ) {
+          return $("i", this).attr('data-target', '.legend')
+        }).filter(function( index ) {
+          return $( ".mapSettings", this ).removeClass('mapSettings_standard')
+        }).filter(function( index ) {
+          return $( ".moreArrowToggle", this ).attr('data-target','.mapSettings').attr('id','more_collapse')
+        }).removeClass('legend-standard');
+
+        allInstances[1].legende.mapLegendeHide()
+        allInstances[0].legende.mapLegendeShow()
+
+        allInstances[0].legende.mapLegendeInfoDataClear()
+        allInstances[1].legende.mapLegendeInfoDataClear()
+
         allInstances[1].legende.legendAddListener(1)
+        allInstances[0].legende.legendAddListener(0)
 
       }
     })

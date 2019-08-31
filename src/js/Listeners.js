@@ -274,6 +274,16 @@ export default class Listeners {
     $(document).on('click', '.dropdown-menu', e => {
       e.stopPropagation();
     });
+    /**
+    // rotate the legend collapse button on click
+    $('#legend_collapse').on('click', () => {
+      $('#legend_collapse').toggleClass('rotate');
+    });
+
+
+    $('.legend').on('show.bs.collapse', () => {
+      $('#legend_collapse_center').toggleClass('rotate');
+    });
 
     // rotate the legend collapse button on click
     $('.legend').on('hide.bs.collapse', () => {
@@ -282,7 +292,7 @@ export default class Listeners {
 
     $('.legend').on('show.bs.collapse', () => {
       $('#legend_collapse').toggleClass('rotate');
-    });
+    });**/
 
     document.getElementById('print').addEventListener('click', () => {
       const mapPrinter = new Printer(activeMap);
@@ -312,6 +322,9 @@ export default class Listeners {
     });
 
     document.getElementById('clear').addEventListener('click', () => {
+
+      //loadData(loadDone)
+      //this.getActiveMap().map.removeSource('')
       this.getActiveMap().loadData();
       this.getActiveMap()._hideLegend();
     });
