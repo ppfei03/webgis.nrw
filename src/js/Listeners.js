@@ -76,25 +76,6 @@ export default class Listeners {
       }
     });
 
-    document.getElementById('my_dataviz').addEventListener('click', e => {
-      const target = $(e.target);
-      //console.log(target)
-      const dataKey = e.path[0].attributes[3].value;
-      let data;
-      if (target.hasClass('middle') && dataKey === 'Gewinner') {
-        data = true;
-        $('.scale-legend').hide();
-        console.log(`your Data :`);
-        console.log(data);
-      } else {
-        $('.scale-legend').show();
-        data = false;
-      }
-      console.log(`your choice : ${dataKey}`);
-      // eslint-disable-next-line no-undef
-      this.getActiveMap().updateData(dataKey, data);
-    });
-
     document
       .getElementById('transparency-slider')
       .addEventListener('input', e => {
@@ -124,8 +105,6 @@ export default class Listeners {
     document
       .getElementById('Anteil_Arbeitslose_UTF8')
       .addEventListener('click', () => {
-        //alert('Click Arbeitslose');
-
         this.getActiveMap().setData('Anteil_Arbeitslose_UTF8', 'Arbeitslose');
       });
     document
@@ -274,6 +253,7 @@ export default class Listeners {
     $(document).on('click', '.dropdown-menu', e => {
       e.stopPropagation();
     });
+
     /**
     // rotate the legend collapse button on click
     $('#legend_collapse').on('click', () => {
@@ -322,45 +302,21 @@ export default class Listeners {
     });
 
     document.getElementById('clear').addEventListener('click', () => {
-
-      //loadData(loadDone)
-      //this.getActiveMap().map.removeSource('')
       this.getActiveMap().loadData();
       this.getActiveMap()._hideLegend();
+      this.getActiveMap().pieChart = '';
+      $('#' + this.getActiveMap().pieName+'_myPieChart').remove();
     });
-
-
-    // document.getElementById('Wahl17_SPD').addEventListener('click', () => {
-    //     map.setData('Wahlergebnisse_CDU_1976_bis_2013', 'Wahl17_SPD');
-    // });
-
-    // document.getElementById('feinstaub01').addEventListener('click', () => {
-    //     map.addFeinstaubLayer('band01_02112017');
-    // });
-
-    // document.getElementById('feinstaub12').addEventListener('click', () => {
-    //     map.addFeinstaubLayer('band12_02112017');
-    // });
-
-    // document.getElementById('feinstaub24').addEventListener('click', () => {
-    //     map.addFeinstaubLayer('band24_02112017');
-    // });
-
-    // document
-    //     .getElementById('feinstaub-remove')
-    //     .addEventListener('click', () => {
-    //         map.removeFeinstaubLayer();
-    //     });
   }
 
   setActiveMap(map) {
-    //alert('aktiviere: ' + map)
     activeMap = map;
 
     try {
       // update transparency slider
       document.getElementById('transparency-slider').value =
         activeMap.getTransparency() * 100;
+      // eslint-disable-next-line no-empty
     } catch (e) {}
   }
 

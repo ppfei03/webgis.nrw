@@ -32,7 +32,7 @@ class Legend {
 
     $("#legend-scale-bar" + this.legendId).append(
       "<div id='" + this.name + "_discrete-legend' class='discrete-legend " + this.name + "' style=\"display: none;\">" +
-      "<ul class=\"legend-labels\">" +
+      "<ul id='" + this.name + "_legend-labels' class=\"legend-labels\">" +
       "<li><span style=\"background:#F1EEF6;\"></span><br/>0 - 20%</li>" +
       "<li><span style=\"background:#BDC9E1;\"></span><br/>40%</li>" +
       "<li><span style=\"background:#74A9CF;\"></span><br/>60%</li>" +
@@ -84,6 +84,13 @@ class Legend {
       "<div id=\"" + this.name + "_download_gif_spinner\" class=\"download_gif_spinner\" style=\"display: none\"></div>" +
       "</div>"
     );
+    let pieName = allInstances[this.getActivInstance()].pieName
+
+    $("#legend-pie-chart" + this.legendId).append(
+      "<div id=\"" + pieName + "_pieChart\" class=\"pieChart " + pieName + "\" style=\"display: none\">" +
+
+      "</div>"
+    );
 
     $("#data-info" + this.legendId).append("<div id=\"" + this.name + "_data-info\" class=\"row data-info " + this.name + "\" >\n" +
       "      <p className=\"col-md-12\">Bewege die Maus über die Kreise</p>\n" +
@@ -95,7 +102,7 @@ class Legend {
   }
 
   legendActivate() {
-
+//console.log('legendActivate')
     if(allInstances[this.getActivInstance()].feature_dataset === undefined){
       this.mapLegendeHide();
       if (!duoLegend) {
@@ -112,14 +119,18 @@ class Legend {
 
     try {
       $("#" + this.name + "_legend-bar").css("background-image", `linear-gradient(to right, ${this.lowColor}, ${this.highColor})`);
-    } catch (error) {
-    }
+    } catch (error) {}
+
   }
 
+  /**
+   * get the Parent INstance from the Legend
+   * @returns {*}
+   */
   getActivInstance() {
     let id;
 
-    if (allInstances[0].container === this.name) {
+    if (allInstances[0].legendName === this.name) {
       id = 0;
     } else {
       id = 1;
@@ -127,8 +138,12 @@ class Legend {
     return id;
   }
 
+  /**
+   * set EventListener to the new LegendElements
+   * @param id is the ID from the current Map
+   */
   legendAddListener(id) {
-    console.log("legendAddListener");
+    //console.log("legendAddListener");
 
     $("[data-toggle=\"tooltip\"]").tooltip();
 
@@ -142,7 +157,7 @@ class Legend {
     });
 
     document.getElementById(this.name + "_border_data").addEventListener("click", () => {
-      //console.log(this.name + "_border_data");
+      ////console.log(this.name + "_border_data");
       allInstances[id].alldata = {
         data: false,
         enabled: true
@@ -151,7 +166,7 @@ class Legend {
     });
 
     document.getElementById(this.name + "_timeslide-play").addEventListener("click", () => {
-      console.log('timeslide-play')
+      //console.log('timeslide-play')
       $("#" + this.name + "_timeslide-play").hide();
       $("#" + this.name + "_timeslide-pause").show();
 
@@ -207,8 +222,9 @@ class Legend {
       allInstances[id].updateData(this.year);
       //this.singleLegend(this.point,this.param2)
     });
-    try{
 
+
+    try{
       $('#legend_collapse').on('click', () => {
         $('#legend_collapse').toggleClass('rotate');
       });
@@ -221,60 +237,8 @@ class Legend {
     $('#more_collapse_center').on('click', () => {
       $('.more_collapse_center').toggleClass('rotate');
     });
-}catch(error){}
-
-  }
-
-
-  legendForDualSplitView(point, param2) {
-    //console.log(allInstances)
-    try {
-      const primary_map_data = primary_map.map.queryRenderedFeatures(
-        point,
-        param2
-      );
-      const secondary_map_data = secondary_map.map.queryRenderedFeatures(
-        point,
-        param2
-      );
-
-
-      let unit1;
-      let unit2;
-      if (
-        typeof primary_map_data[0].properties[primary_map.feature_dataset.title] ===
-        "string"
-      ) {
-        unit1 = "";
-      } else {
-        unit1 = primary_map.feature_dataset.unit;
-      }
-      if (
-        typeof secondary_map_data[0].properties[secondary_map.feature_dataset.title] ===
-        "string"
-      ) {
-        unit2 = "";
-      } else {
-        unit2 = secondary_map.feature_dataset.unit;
-      }
-
-
-      let myString =
-        `<h4 class="col-md-12" id="Gemeindename"><strong>${
-          primary_map_data[0].properties.Gemeindename
-        }</strong></h4>` +
-        `<p class="col-md-6">links : <strong><em>${
-          primary_map_data[0].properties[primary_map.feature_dataset.title]
-
-        }</strong> ${unit1}</em></p>` +
-        `<p class="col-md-6">rechts : <strong><em>${
-          secondary_map_data[0].properties[secondary_map.feature_dataset.title]
-
-        }</strong> ${unit2}</em></p>`;
-
-      document.getElementById("pd").innerHTML = myString;
-    } catch (error) {
-      console.log(error);
+}catch(error){
+      console.log(error)
     }
 
   }
@@ -286,10 +250,11 @@ class Legend {
       this.param2 = param2;
       let myDataString;
 
-
       if (!duoLegend && ( allInstances.length > 1)) {
         let map_data="";
         let map_data2="";
+        //console.log('allInstances[0].map.layers')
+        //console.log(allInstances[0].map.layers)
         try{
         map_data = allInstances[0].map.queryRenderedFeatures(
           point,
@@ -315,15 +280,23 @@ class Legend {
           myDataString[0]
         }</strong></h2>` + myDataString[1] +
         `</div>`;
+
       $("#" + this.name + "_timeslide-center").html('');
 
       $("#" + this.name + "_data-info").html(myString);
 
     } catch (error) {
-console.log(error)
+//console.log(error)
     }
   }
 
+
+  /**
+   *
+   * @param mapDataArray Is a Array, include the data from one or two maps
+   * @param colFormat defined the collumn range of the html result e.g. col-md-6
+   * @returns {[*, *]} Array with a String include dataInformation in HTML and the "gemeindeName" from current "selection"
+   */
   generateMapInformationStringFromData(mapDataArray, colFormat) {
     let string = [];
     let stringFinal;
@@ -350,8 +323,6 @@ console.log(error)
       if (map_data[0].properties[allInstances[id].getTitle()] === "null") {
         data = "Keine Daten verfügbar";
       } else {
-        //console.log(map_data[0].properties)
-        //console.log(allInstances[id].getTitle())
         data = map_data[0].properties[allInstances[id].getTitle()];
       }
 
@@ -359,7 +330,7 @@ console.log(error)
       string.push(`<div class=${colFormat}><h4><strong><em>${data}</strong> ${unit}</em></h4></div>`);
       string.push(`<div class=${colFormat}><h5><em id="`+this.name +`_year">${yearData}</em></h5></div>`);
     }catch(error){
-        console.log('generateMapInformationStringFromData :: ' + error)
+        //console.log('generateMapInformationStringFromData :: ' + error)
         string.push(`<div class=${colFormat}><p >Kein Thema vorhanden</p></div>`);
         string.push(`<div class=${colFormat}></div>`);
         string.push(`<div class=${colFormat}></div>`);
@@ -378,13 +349,15 @@ console.log(error)
   }
 
   changeLegendScaleBar(data) {
-    console.log("changeLegendScaleBar");
+    //console.log("changeLegendScaleBar");
+    console.log(data)
+
     $("#" + this.name + "_legend-min").html(Statistics.getMin(data));
     $("#" + this.name + "_legend-max").html(Statistics.getMax(data));
   }
 
   legendeShow() {
-    console.log("legendeShow");
+    //console.log("legendeShow");
 
     $("#" + this.name + "_legend-bar").show();
     $("#" + this.name + "_legend-min").show();
@@ -392,7 +365,7 @@ console.log(error)
   }
 
   legendeHide() {
-    console.log("legendeHide");
+    //console.log("legendeHide");
 
     $("#" + this.name + "_legend-bar").hide();
     $("#" + this.name + "_legend-min").hide();
@@ -400,34 +373,44 @@ console.log(error)
   }
 
   legendDiscreteShow() {
-    console.log("legendDiscreteShow");
+    //console.log("legendDiscreteShow");
 
     $("#" + this.name + "_discrete-legend").show();
   }
 
   legendDiscreteHide() {
-    console.log("legendDiscreteHide");
+    //console.log("legendDiscreteHide");
 
     $("#" + this.name + "_discrete-legend").hide();
   }
 
   mapLegendeShow() {
-    console.log("mapLegendeShow");
+    //console.log("mapLegendeShow");
 
     $("." + this.name).show();
+    $("#" + this.name+"_border_option").show();
+    $("." + allInstances[this.getActivInstance()].pieName).show();
+    if(allInstances[this.getActivInstance()].pieEnable){
+      $("#" + this.name+"_timeslider").hide();
+      $("#" + this.name+"_border_option").hide();
+      /*if($("#" + this.name+"_year").text()==="Gewinner"){
+        $("#" + this.name+"_legend").hide();
+      }*/
+    }
     if (!allInstances[this.getActivInstance()].statistics_state.enabled) {
       this.legendDiscreteHide();
     }
   }
 
   mapLegendeHide() {
-    console.log("mapLegendeShow");
+    //console.log("mapLegendeShow");
 
     $("." + this.name).hide();
+    $("." + allInstances[this.getActivInstance()].pieName).hide();
   }
 
   mapLegendeInfoDataClear() {
-    console.log("mapLegendeShow");
+    //console.log("mapLegendeShow");
 
     $("#" + this.name+"_data-info").filter(function( index ) {
       return $( ".row", this ).remove()
@@ -437,7 +420,7 @@ console.log(error)
 
 
   fillTimeslider() {
-    console.log("fillTimeslider");
+    //console.log("fillTimeslider");
 
     let id = this.getActivInstance();
     $("#" + this.name + "_timeslide-min").html(allInstances[id]._getFirstYearOfDataset());

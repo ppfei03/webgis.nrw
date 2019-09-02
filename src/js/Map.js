@@ -1,19 +1,15 @@
 import mapboxgl from 'mapbox-gl';
 import 'whatwg-fetch';
-import * as d3 from 'd3';
 
 import colorLerp from 'color-lerp';
-
-import Statistics from './Statistics.js';
-
-// const KreiseNRW_source = require('./../data/landkreise_simplify0.json');
 import { mapboxToken, wmsLayerUrls } from './../config.js';
 import CSVParser from './CSVParser.js';
 import App from './App';
 import Legend from './Legend';
+import PieChart from './PieChart';
+import Statistics from './Statistics.js';
 
 let KreiseNRW;
-//let this.feature_dataset;
 let current_year;
 let current_legend = $('.scale-legend')[0];
 
@@ -21,60 +17,20 @@ let showLegendOnStart = false;
 
 export const allInstances = [];
 
-// set the dimensions and margins of the graph
-const width = 370,
-  height = 370,
-  margin = 40;
-
-// The radius of the pieplot is half the width or half the height (smallest one). I substract a bit of margin.
-const radius = Math.min(width, height) / 2 - margin;
-
-const svg = d3
-  .select('#my_dataviz')
-  .append('svg')
-  .attr('width', width)
-  .attr('height', height)
-  .append('g')
-  .attr('transform', `translate(${width / 2},${height / 2})`);
-/**
-  .call(
-    d3
-      .zoom()
-      .scaleExtent([1, 15])
-      .on('zoom', zoom)
-  );
-
-function zoom() {
-  svg.attr('transform', d3.event.transform);
-}
-**/
-// create 2 data_set
-const data1 = {
-  Wahlbeteiligung: 'Wahlbeteiligung',
-  Ungueltige_Stimmen: 'Ungültige_Stimmen',
-  Gueltige_Stimmen: 'Gültige_Stimmen',
-  Gewinner: 'Gewinner'
-};
-//const data2 = { a: 6, b: 16, c: 20, d: 14, e: 19, f: 12 };
-
-// set the color scale
-const color = d3
-  .scaleOrdinal()
-  //.domain(['a', 'b', 'c', 'd', 'e', 'f'])
-  .range(d3.schemeDark2);
-
 //const map = undefined;
 
 export default class Map {
   /**
-   *
    * @param {String} container HTML div for the map
    * @param {Array} center [lat, lon] center of map
    * @param {Number} zoom initial zoom level
    * @param {function} loadDone callback function when load was successful
    */
   constructor(container, center, zoom, loadDone) {
-    this.container = `${container}Legend`;
+    this.container = container;
+    this.legendName = `${this.container}Legend`;
+    this.pieName = `${this.container}Pie`;
+    this.pieEnable = false;
 
     this.alldata = {
       data: false,
@@ -98,80 +54,21 @@ export default class Map {
       preserveDrawingBuffer: true // to print map
     });
     allInstances.push(this);
-    this._updatePipe(data1);
-
-    this.legende = new Legend(`${this.container}`);
+    //this._updatePipe(data1);
+    this.legende = new Legend(this.legendName);
 
     this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
     this.map.on('load', () => {
       // When a click event occurs on a feature in the places layer, open a popup at the
       // location of the feature, with description HTML from its properties.
-      this.map.on('click', 'kreisgrenzen', e => {
-        if (e.features.length > 0) {
-          new mapboxgl.Popup()
-            .setLngLat(e.lngLat)
-            .setHTML(e.features[0].properties.Gemeindename)
-            .addTo(this.map);
-        }
-        if (!this.getMoveOverViewSetting()) {
-          this.legende.legendActivate();
-          this.legende.singleLegend(e.point, {
-            layers: ['kreisgrenzen']
-          });
-
-          const states = this.map.queryRenderedFeatures(e.point, {
-            layers: ['kreisgrenzen']
-          });
-          try {
-            this._updatePipe(JSON.parse(states[0].properties.dataArray));
-          } catch (error) {}
-        }
-      });
-
-      // Change the cursor to a pointer when the mouse is over the places layer.
-      this.map.on('mouseenter', function() {
-        this.map.getCanvas().style.cursor = 'pointer';
-      });
-
-      // Change it back to a pointer when it leaves.
-      this.map.on('mouseleave', function() {
-        this.map.getCanvas().style.cursor = '';
-      });
     });
 
     this.map.on('style.load', () => {
       // load initial NRW data and callback when load is done
       this.loadData(loadDone);
-
+      this._addEventListener();
       // show current Kreis on legend overlay
-      this.map.on('mousemove', e => {
-        if (this.getMoveOverViewSetting()) {
-          if (this.map.getLayer('kreisgrenzen')) {
-            const states = this.map.queryRenderedFeatures(e.point, {
-              layers: ['kreisgrenzen']
-            });
-
-            if (states.length > 0) {
-              if (App.dualView || App.splitView) {
-                this.legende.legendActivate();
-                this.legende.singleLegend(e.point, {
-                  layers: ['kreisgrenzen']
-                });
-              } else {
-                this.legende.legendActivate();
-                this.legende.singleLegend(e.point, {
-                  layers: ['kreisgrenzen']
-                });
-              }
-              if (states[0].properties.dataArray !== undefined) {
-                this._updatePipe(JSON.parse(states[0].properties.dataArray));
-              }
-            } else {
-            }
-          }
-        }
-      });
     });
     // map.on('mouseleave', 'kreisgrenzen', function() {
     //   map.setFilter('kreis-border-hover', ['==', 'Gemeindename', '']);
@@ -193,8 +90,9 @@ export default class Map {
   getMinMaxSetting() {
     return this.alldata.enabled;
   }
+
   getMoveOverViewSetting() {
-    return $(`#${this.container}_auto_change`)
+    return $(`#${this.legendName}_auto_change`)
       .parent()
       .hasClass('active');
   }
@@ -229,6 +127,7 @@ export default class Map {
         type: 'geojson',
         data: KreiseNRW
       });
+      // eslint-disable-next-line no-empty
     } catch (e) {}
     this.map.addLayer({
       id: 'kreisgrenzen',
@@ -242,6 +141,7 @@ export default class Map {
     });
     try {
       loadDone(true);
+      // eslint-disable-next-line no-empty
     } catch (e) {}
   }
 
@@ -552,7 +452,6 @@ export default class Map {
    */
   updateData(year, data) {
     //this.legende.year = year;
-    this.legende.legendActivate();
     current_year = year;
     let maxDataKey = 0;
     KreiseNRW.features.map(kreis => {
@@ -569,7 +468,6 @@ export default class Map {
           if (maxDataKey !== 0) {
             kreis.properties[this.feature_dataset.title] = maxDataKey;
           } else {
-
             kreis.properties[this.feature_dataset.title] = Number(
               kreisPop.data[year]
             );
@@ -579,7 +477,7 @@ export default class Map {
       });
     });
 
-    if (this.statistics_state.enabled) {
+    if (this.statistics_state.enabled && !data) {
       if (this.alldata.enabled) {
         this.map.getSource('KreiseNRW').setData(KreiseNRW);
         if (!this.alldata.data) {
@@ -596,6 +494,9 @@ export default class Map {
         this.statistics_state.colorStops
       );
     } else if (data) {
+      this.statistics_state.enabled = true;
+      $(`#${this.legendName}_legend-labels`).empty();
+
       this.map.getSource('KreiseNRW').setData(KreiseNRW);
       const dataInMap = this._getData();
       const allDataInMap = Statistics.getUniqueValues(
@@ -624,6 +525,32 @@ export default class Map {
         type: 'categorical',
         stops: stepColor
       });
+
+      for (let i=0; i < stepColor.length; i++) {
+
+        const liFlex =
+          (1) /
+          (stepColor.length);
+
+
+        if (i === stepColor.length - 1) {
+          console.log('HIER');
+          $(`#${this.legendName}_legend-labels`).append(
+            `<li style="flex: ${liFlex}">
+            <span style="background:${stepColor[i][1]};">
+            </span>${stepColor[i][0]}</li>`
+          );
+        } else {
+          $(`#${this.legendName}_legend-labels`).append(
+            `<li style="flex: ${liFlex}">
+            <span style="background:${stepColor[i][1]};">
+            </span>${stepColor[i][0]}</li>`
+          );
+        }
+
+      }
+      this.legende.legendDiscreteShow();
+      this.legende.legendeHide();
     } else {
       this.map.getSource('KreiseNRW').setData(KreiseNRW);
       this.map.setPaintProperty('kreisgrenzen', 'fill-color', {
@@ -636,11 +563,6 @@ export default class Map {
     }
 
     this.legende.changeLegendScaleBar(this._getData());
-
-    //this.legende.singleLegend(this.legende.point, {
-    //  layers: ['kreisgrenzen']
-    //});
-
   }
 
   /**
@@ -656,6 +578,7 @@ export default class Map {
           //data.unit = '%';
         } else if (document.getElementById('csv_timedata').checked) {
           this._setDataFromJSON(data, file.name);
+          // eslint-disable-next-line no-empty
         } else {
         }
       });
@@ -808,7 +731,7 @@ export default class Map {
 
     const stops = ['step', ['get', this.feature_dataset.title]];
 
-    $('.legend-labels').empty();
+    $(`#${this.legendName}_legend-labels`).empty();
 
     colors.forEach((e, i) => {
       if (i !== 0) {
@@ -820,23 +743,16 @@ export default class Map {
         (classes[i + 1] - classes[i]) /
         (classes[classes.length - 1] - classes[0]);
 
-      /**
-       * TODO: show amount of elements in class
-       * add the following snippet to the li tag and uncomment the const count line:
-       * data-toggle="tooltip" data-placement="top" data-html="true" title="${count}"
-       */
-      // const count = this._getCountInRange(classes[i], classes[i + 1]);
       const lowerBound = Math.round(classes[i] * 10) / 10;
       const upperBound = Math.round(classes[i + 1] * 10) / 10;
-
       if (i === colors.length - 1) {
-        $('.legend-labels').append(
+        $(`#${this.legendName}_legend-labels`).append(
           `<li style="flex: ${liFlex}">
             <span style="background:${e};">
             </span>${lowerBound}<br /> - <br />${upperBound}</li>`
         );
       } else {
-        $('.legend-labels').append(
+        $(`#${this.legendName}_legend-labels`).append(
           `<li style="flex: ${liFlex}">
             <span style="background:${e};">
             </span>${lowerBound}<br /> - <br /><${upperBound}</li>`
@@ -869,19 +785,18 @@ export default class Map {
     this.legende.legendActivate();
     this.feature_dataset = data;
     this.alldata.data = false;
+    this.pieEnable = false;
+    this.pieChart = false;
     this.legende.fillTimeslider();
+    $(`#${this.pieName}_myPieChart`).remove();
 
     // show json in new tab
     /**const win = window.open();
-    win.document.write(
-      decodeURIComponent(encodeURIComponent(JSON.stringify(data)))
-    );**/
+     win.document.write(
+     decodeURIComponent(encodeURIComponent(JSON.stringify(data)))
+     );**/
 
-    $('#my_dataviz').hide();
-
-    $('.legend').each(function() {
-      $(this).removeClass('legendWithPieChart');
-    });
+    //$(`#${this.pieName}_pieChart`).hide();
 
     // map feature to layer
     KreiseNRW.features.map(kreis => {
@@ -909,6 +824,7 @@ export default class Map {
       this.statistics_state.enabled = false;
       this._hideLegend();
     }
+    this.legende.mapLegendeShow();
 
     $('.legend-info-wrapper').show();
     this.legende.year = this._getFirstYearOfDataset();
@@ -926,13 +842,16 @@ export default class Map {
     this.feature_dataset = data;
     this.legende.year = 'Wahlbeteiligung';
     this.alldata.data = false;
-
-    $('#my_dataviz').show();
-    $('#mapLegend_timeslider').hide();
-
-    $('.legend').each(function() {
-      $(this).addClass('legendWithPieChart');
-    });
+    this.alldata.enabled = false;
+    this.pieEnable = true;
+    if (!this.pieChart) {
+      console.log('new PieChart');
+      this.pieChart = new PieChart(this.pieName);
+      this._addEventListener();
+      console.log(this.pieChart);
+    }
+    $(`#${this.pieName}_pieChart`).show();
+    //$(`#${this.legendName}_timeslider`).hide();
 
     // map feature to layer
     KreiseNRW.features.map(kreis => {
@@ -976,7 +895,6 @@ export default class Map {
 
     // update ui elements
     this.legende.changeLegendScaleBar(this._getData());
-
     if (this.statistics_state.enabled) {
       this.statistics_state.enabled = false;
       this._hideLegend();
@@ -985,30 +903,6 @@ export default class Map {
 
     //this._updatePipe(data1);
     //this.updateData();
-  }
-
-  /**
-   * @description returns the max value according to data and feature
-   * @param {json object} data data where you want to get the max value
-   * @param {string} feature
-   * @returns max value
-   */
-  _getMaxFeature(data, feature, value) {
-    let maxVal = 0;
-    let searchAttribute;
-    if (this.alldata.enabled) {
-      searchAttribute = value;
-    } else {
-      searchAttribute = feature;
-    }
-
-    data.features.forEach(child => {
-      if (child.properties[searchAttribute] > maxVal) {
-        maxVal = child.properties[searchAttribute];
-      }
-    });
-
-    return maxVal;
   }
 
   /**
@@ -1028,31 +922,6 @@ export default class Map {
     });
 
     return maxkey;
-  }
-
-  /**
-   * @description returns the min value according to data and feature
-   * @param {json object} data data where you want to get the min value
-   * @param {string} feature
-   * @returns min value
-   */
-  _getMinFeature(data, feature, value) {
-    let minVal = 999999999999;
-
-    let searchAttribute;
-
-    if (this.alldata.enabled) {
-      searchAttribute = value;
-    } else {
-      searchAttribute = feature;
-    }
-    data.features.forEach(child => {
-      if (child.properties[searchAttribute] < minVal) {
-        minVal = child.properties[searchAttribute];
-      }
-    });
-
-    return minVal;
   }
 
   /**
@@ -1084,7 +953,7 @@ export default class Map {
   _getAllData() {
     const temp = [];
     if (this.alldata.data === false) {
-      console.log('in alldata Function');
+      //console.log('in alldata Function');
       //console.log(this.feature_dataset.data)
       KreiseNRW.features.map(kreis => {
         this.feature_dataset.data.forEach(kreisAllData => {
@@ -1107,9 +976,84 @@ export default class Map {
       });
       this.alldata.data = temp;
     }
-    console.log(this.alldata);
 
     return this.alldata.data;
+  }
+
+  _addEventListener() {
+    this.map.on('click', 'kreisgrenzen', e => {
+      if (e.features.length > 0) {
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(e.features[0].properties.Gemeindename)
+          .addTo(this.map);
+      }
+      if (!this.getMoveOverViewSetting()) {
+        this.legende.legendActivate();
+        this.legende.singleLegend(e.point, {
+          layers: ['kreisgrenzen']
+        });
+
+        const states = this.map.queryRenderedFeatures(e.point, {
+          layers: ['kreisgrenzen']
+        });
+        if (this.pieEnable) {
+          console.log('pieChart');
+          this.pieChart._updatePipe(JSON.parse(states[0].properties.dataArray));
+          // eslint-disable-next-line no-empty
+        }
+      }
+    });
+
+    // Change the cursor to a pointer when the mouse is over the places layer.
+    this.map.on('mouseenter', function() {
+      this.map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a pointer when it leaves.
+    this.map.on('mouseleave', function() {
+      this.map.getCanvas().style.cursor = '';
+    });
+
+    this.map.on('mousemove', e => {
+      if (this.getMoveOverViewSetting()) {
+        if (this.map.getLayer('kreisgrenzen')) {
+          const states = this.map.queryRenderedFeatures(e.point, {
+            layers: ['kreisgrenzen']
+          });
+          try {
+            if (this.laststate !== states[0].properties.Gemeindename) {
+              console.log(states[0].properties.Gemeindename);
+
+              this.laststate = states[0].properties.Gemeindename;
+
+              if (states.length > 0) {
+                if (App.dualView || App.splitView) {
+                  this.legende.legendActivate();
+                  this.legende.singleLegend(e.point, {
+                    layers: ['kreisgrenzen']
+                  });
+                } else {
+                  this.legende.legendActivate();
+                  this.legende.singleLegend(e.point, {
+                    layers: ['kreisgrenzen']
+                  });
+                }
+                if (this.pieEnable) {
+                  this.pieChart._updatePipe(
+                    JSON.parse(states[0].properties.dataArray)
+                  );
+                }
+              }
+              // eslint-disable-next-line no-empty
+            } else {
+            }
+          } catch (error) {
+            this.laststate = '';
+          }
+        }
+      }
+    });
   }
 
   _getData() {
@@ -1125,188 +1069,8 @@ export default class Map {
         }
       });
     }
-    //console.log(temp);
 
     return temp;
-  }
-
-  // eslint-disable-next-line no-warning-comments
-  // TODO consider number that are exactly on min / max
-  _getCountInRange(min, max) {
-    let counter = 0;
-    this._getData().forEach(e => {
-      if (e >= min && e <= max) {
-        counter++;
-      }
-    });
-
-    return counter;
-  }
-
-  // A function that create / update the plot for a given variable:
-  _updatePipe(data) {
-    // Compute the position of each group on the pie:
-    const pie = d3.pie().value(function(d) {
-      return d.value;
-    });
-    const pie2 = d3.pie().value(function(d) {
-      return 45;
-    });
-    const data_ready = pie(d3.entries(data));
-    const data_ready2 = pie2(d3.entries(data1));
-
-    // map to data
-    const u = svg
-      .selectAll('path.outer')
-      .data(data_ready)
-      .on('mouseover', this._handleMouseOver)
-      .on('mouseout', this._handleMouseOut)
-      .on('click', this._handleMouseOnClick);
-
-    const o = svg
-      .selectAll('path.middle')
-      .data(data_ready2)
-      .on('mouseover', this._handleMouseOver)
-      .on('mouseout', this._handleMouseOut)
-      .on('click', this._handleMouseOnClick);
-
-    o.enter()
-      .append('path')
-      .merge(o)
-      .transition()
-      .attr(
-        'd',
-        d3
-          .arc()
-          .innerRadius(0)
-          .outerRadius(40)
-      )
-      .attr('class', 'middle')
-      .attr('fill', function(d) {
-        return color(d.data.key);
-      })
-      .attr('name', function(d) {
-        return d.data.key;
-      })
-      .attr('data', JSON.stringify(data))
-      .attr('stroke', 'white')
-      .style('stroke-width', '0px')
-      .style('opacity', 1);
-
-    // shape helper to build arcs:
-    const arcGenerator = d3
-      .arc()
-      .innerRadius(0)
-      .outerRadius(radius);
-
-    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-    u.enter()
-      .append('path')
-      .merge(u)
-      .transition()
-      .duration(500)
-      .attr(
-        'd',
-        d3
-          .arc()
-          .innerRadius(55)
-          .outerRadius(radius)
-      )
-      .attr('class', 'outer')
-      .attr('fill', function(d) {
-        return color(d.data.key);
-      })
-      .attr('name', function(d) {
-        return d.data.key;
-      })
-      .attr('stroke', 'white')
-      .style('stroke-width', '0px')
-      .style('opacity', 1);
-
-    /**
-//show lable from path
-     // Now add the annotation. Use the centroid method to get the best coordinates
-     u //.selectAll('mySlices')
-     //.data(data_ready)
-     .enter()
-     .append('text')
-     .text(function(d) {
-        console.log(d);
-
-        return `grp ${d.data.key}`;
-      })
-     .attr('transform', function(d) {
-        return `translate(${arcGenerator.centroid(d)})`;
-      })
-     .style('text-anchor', 'middle')
-     .style('font-size', 17);
-
-     // remove the group that is not present anymore
-     **/
-
-    u.exit().remove();
-    o.exit().remove();
-  }
-
-  _handleMouseOver(d, i) {
-    /**
-    // show text when hover over:
-    const arcGenerator = d3
-      .arc()
-      .innerRadius(0)
-      .outerRadius(radius);
-
-    // Use D3 to select element, change color and size
-    d3.select(this)
-      .style('fill', 'yellow') //d3.select(this).attr('stroke'))
-      .attr('opacity', 0.3);
-
-    // Specify where to put label of text
-    d3.select(this.parentNode)
-      .append('text')
-      .text(function() {
-        d3.select(this);
-
-        return `${d.data.key} : ${d.data.value}`;
-      })
-      .attr('transform', function() {
-        d3.select(this);
-
-        return `translate(${arcGenerator.centroid(d)})`;
-      })
-      .style('text-anchor', 'middle')
-      .style('font-size', 17);
-**/
-    let myString;
-    if (typeof d.data.value === 'string') {
-      console.log('data is string');
-      myString = `<p><strong>${d.data.key}</strong></p>`;
-    } else {
-      myString = `<p><strong>${d.data.key} : ${d.data.value}%</strong></p>`;
-    }
-
-    document.getElementById('infoPieChart').innerHTML = myString;
-  }
-
-  _handleMouseOut(d, i) {
-    /**
-    // Use D3 to select element, change color back to normal
-    d3.select(this)
-      .style('fill', d3.select(this).attr('fill'))
-      .attr('opacity', 1);
-
-    d3.select(this.parentNode)
-      .selectAll('text')
-      .remove();
-**/
-    document.getElementById('infoPieChart').innerHTML = '';
-  }
-
-  _handleMouseOnClick(d, i) {
-    // console.log(d.data.key);
-    // console.log(this.parentNode.parentNode.parentNode);
-    //this('#map').updateData(d.data.key);
-    //KreiseNRW.features.map.updateData(d.data.key);
   }
 
   _addHomeButton() {

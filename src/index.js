@@ -78,5 +78,5 @@ App.run();
 $(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
-  $('#launchModal').modal('toggle');
+  //$('#launchModal').modal('toggle');
 });

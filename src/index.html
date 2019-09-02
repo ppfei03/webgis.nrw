@@ -423,17 +423,17 @@
 <!--                <div id='year'></div>-->
                 <div id='legend-scale-bar' class="scale-legend">
                 </div>
+                <div id='legend-pie-chart' class="legend-pie-chart">
+                </div>
                 <p id="more_collapse"class="moreArrowToggle"data-toggle="collapse" data-target=".mapSettings">
-                    <i class="arrowToggle material-icons rotate-down"aria-expanded="true">keyboard_arrow_down</i>
+                    <i class="arrowToggle material-icons rotate-down" aria-expanded="true">keyboard_arrow_down</i>
                     ...mehr...
-                    <i class="arrowToggle material-icons rotate-down"aria-expanded="true">keyboard_arrow_down</i>
+                    <i class="arrowToggle material-icons rotate-down" aria-expanded="true">keyboard_arrow_down</i>
                 </p>
                 <div class="mapSettings collapse multi-collapse">
                 <div class="flex-timeslider">
                     <div class='timeslider-wrapper'>
                         <div id='timeslider'>
-
-
                         </div>
                     </div>
                 </div>
@@ -444,22 +444,6 @@
             </div>
             </div>
         </div>
-
-
-
-        <!-- Create a div where the graph will take place -->
-        <div id="my_dataviz" style="display:none">
-            <div class="info">
-
-            </div>
-        </div>
-
-        <div>
-            <p id='infoPieChart'></p>
-
-        </div>
-
-
     </div>
 </div>
 
@@ -512,7 +496,7 @@
                            style="margin-top: 0px;">info</i>
                     </div>
                     <div class="form-group">
-                        <label for="csv_file">CSV Datei</label>
+                        <label for="custom_csv_input">CSV Datei</label>
                         <input type="file" class="form-control" id="custom_csv_input">
                     </div>
                     <div class="form-group">

@@ -37,8 +37,8 @@ class App {
         drop: function(event, ui) {
           listeners.setActiveMap(primary_map);
           try{
-            $(`#${ui.draggable[0].id}`).click()
-            $(`#${ui.draggable[0].id}`).click()
+            $(`#${ui.draggable[0].id}`).click();
+            $(`#${ui.draggable[0].id}`).click();
           }catch(error){
             console.log(error)
             alert(error)
@@ -57,12 +57,12 @@ class App {
     $('#mode-dual').on('change', () => {
       $('#legendMapOption').show();
 
-      $('.split_mapLegend').remove();
+      $('.split_mapLegend,.split_mapPie').remove();
       if (!this.dualView && $('#mode-dual').is(':checked')) {
 
 
         if (this.splitView) {
-          allInstances.pop()
+          allInstances.pop();
           $('#split_map').remove();
           $('.mapboxgl-compare').remove();
           this.splitView = false;
@@ -100,7 +100,7 @@ class App {
     // split mode triggered
     $('#mode-split').on('change', () => {
       $('#legendMapOption').show();
-      $('.dual_mapLegend').remove();
+      $('.dual_mapLegend, .dual_mapPie').remove();
 
       if (!this.splitView && $('#mode-split').is(':checked')) {
         if (this.dualView) {
@@ -156,11 +156,11 @@ class App {
     $('#mode-standard').on('change', () => {
       $('#legendMapOption').hide();
 
-      $('.dual_mapLegend, .split_mapLegend').remove();
+      $('.dual_mapLegend, .split_mapLegend, .dual_mapPie, .split_mapPie').remove();
 
       if ($('#mode-standard').is(':checked')) {
         if (this.dualView) {
-          allInstances.pop()
+          allInstances.pop();
 
           $('.webgis-view-split').remove();
           $('.webgis-view, #map').css('width', '100vw');
@@ -275,9 +275,7 @@ class App {
         clickType:[],clickX:[],clickY:[],clickTime:[],clickCount:[],clickElement:[]
       };
 
-      mouseTrack.clickX.push(
-        x,
-      );
+      mouseTrack.clickX.push(x,);
       if (y !== "") {
         y = $(document).height() - y
       }
@@ -322,25 +320,24 @@ class App {
 
     $('#legend-duo').click(function() {
       if(!duoLegend){
+        console.log('legend-duo')
 
-        allInstances[0].legende.mapLegendeHide()
-        allInstances[0].legende.mapLegendeInfoDataClear()
-        allInstances[0].legende.mapLegendeShow()
+        allInstances[0].legende.mapLegendeHide();
+        allInstances[0].legende.mapLegendeInfoDataClear();
+        allInstances[0].legende.mapLegendeShow();
 
-        allInstances[1].legende.mapLegendeHide()
-        allInstances[1].legende.mapLegendeInfoDataClear()
-        allInstances[1].legende.mapLegendeShow()
+        allInstances[1].legende.mapLegendeHide();
+        allInstances[1].legende.mapLegendeInfoDataClear();
+        allInstances[1].legende.mapLegendeShow();
 
 
       duoLegend=true;
-        console.log('legend-duo')
 
       $(".legend-wrapper").addClass('legend-standard');
-
+        $(`#${allInstances[0].pieName}_myPieChart`).remove()
       $("body").append($(".legend-wrapper").clone(false).addClass('legend-center').removeClass('legend-standard'));
 
 
-      //$( ".dual_mapLegend, .mapLegend, .split_mapLegend").show()
       $( ".legend-center" )
         .filter(function( index ) {
           return $( ".legend", this ).addClass('center')
@@ -358,6 +355,10 @@ class App {
           return $( ".dual_mapLegend", this ).remove()
         }).filter(function( index ) {
           return $( ".split_mapLegend", this ).remove()
+        }).filter(function( index ) {
+          return $( ".dual_mapPie", this ).remove()
+        }).filter(function( index ) {
+          return $( ".split_mapPie", this ).remove()
         })
 
       $( ".legend-standard" )
@@ -371,10 +372,20 @@ class App {
         return $( ".mapSettings", this ).addClass('mapSettings_standard')
       }).filter(function( index ) {
         return $( ".mapLegend", this ).remove()
+      }).filter(function( index ) {
+        return $( ".mapPie", this ).remove()
       })
 
 
         allInstances[0].legende.legendAddListener(0)
+        allInstances[1].legende.legendAddListener(1)
+        try {
+          allInstances[0].pieChart.pieAddListener(0)
+          allInstances[0]._addEventListener()
+
+        }catch(error){
+        console.log(error)
+        }
 
       }
 
@@ -385,6 +396,8 @@ class App {
     $('#legend-standard').click(function() {
       if(duoLegend) {
         console.log('legend-standard')
+        $(`#${allInstances[0].pieName}_myPieChart`).remove()
+
 
         duoLegend = false;
         //$(".center").append($(".standard").clone(true));
@@ -394,6 +407,7 @@ class App {
         $("#legend-scale-bar").append($("#mapLegend_legend").clone(true));
         $("#legend-scale-bar").append($("#mapLegend_discrete-legend").clone(true));
         $("#map_data_option").append($("#mapLegend_map_data_option").clone(true));
+        //$("#legend-pie-chart").append($("#mapPie_pieChart").clone(true));
 
         $('.legend-center').remove();
         $( ".legend-standard" )
@@ -407,55 +421,58 @@ class App {
           return $( ".moreArrowToggle", this ).attr('data-target','.mapSettings').attr('id','more_collapse')
         }).removeClass('legend-standard');
 
-        allInstances[1].legende.mapLegendeHide()
-        allInstances[0].legende.mapLegendeShow()
+        allInstances[1].legende.mapLegendeHide();
+        allInstances[0].legende.mapLegendeShow();
 
-        allInstances[0].legende.mapLegendeInfoDataClear()
-        allInstances[1].legende.mapLegendeInfoDataClear()
+        allInstances[0].legende.mapLegendeInfoDataClear();
+        allInstances[1].legende.mapLegendeInfoDataClear();
 
-        allInstances[1].legende.legendAddListener(1)
-        allInstances[0].legende.legendAddListener(0)
+        allInstances[1].legende.legendAddListener(1);
+        allInstances[0].legende.legendAddListener(0);
+
+        allInstances[1]._addEventListener();
+        allInstances[0]._addEventListener();
 
       }
     })
 
 
-    let enableDraggableSettings = true
-    let mouseAndClickRecord = false
+    let enableDraggableSettings = true;
+    let mouseAndClickRecord = false;
 
 
     $(document).on('keypress', function(key) {
-      console.log(key)
+      console.log(key);
       if (key.which === 114) { //when click "r" for Record
-        console.log('Record')
-        mouseAndClickRecord = !mouseAndClickRecord
+        console.log('Record');
+        mouseAndClickRecord = !mouseAndClickRecord;
 
         if(mouseAndClickRecord){
-          addMouseCLick(0, 0,'recordBreak','recordStart')
+          addMouseCLick(0, 0,'recordBreak','recordStart');
 
-          $('#recordIcon').html('fiber_manual_record')//.show()
+          $('#recordIcon').html('fiber_manual_record');//.show()
         }else{
-          addMouseCLick(0, 0,'recordBreak','recordEnd')
+          addMouseCLick(0, 0,'recordBreak','recordEnd');
 
-          $('#recordIcon').html('')//hide()
+          $('#recordIcon').html('');//hide()
         }
       }
       if (key.which === 109) { //when click "m" for change modus drag/drop to click
-        enableDraggableSettings = !enableDraggableSettings
+        enableDraggableSettings = !enableDraggableSettings;
         if(enableDraggableSettings){
-          $('.draggable').draggable( 'enable' )
+          $('.draggable').draggable( 'enable' );
           $('#map-select').collapse('hide');
         }else{
-          $('.draggable').draggable( 'disable' )
+          $('.draggable').draggable( 'disable' );
         }
       }
 
       if (key.which === 112) { //when click "p" for Break
-        addMouseCLick('', '','recordBreak','recordBreak')
+        addMouseCLick('', '','recordBreak','recordBreak');
 
-        $('#recordIcon').html('pause_circle_outline')//.show()
+        $('#recordIcon').html('pause_circle_outline');//.show()
         setTimeout(function(){
-          $('#recordIcon').html('fiber_manual_record')//.show()
+          $('#recordIcon').html('fiber_manual_record');//.show()
         },1000)
 
       }
@@ -464,22 +481,22 @@ class App {
         let string = Date.now() + '_result.txt';
         download(sessionStorage.getItem('mouseTrack'), string, 'text/plain');
         if(mouseAndClickRecord){
-          mouseAndClickRecord = !mouseAndClickRecord
+          mouseAndClickRecord = !mouseAndClickRecord;
         }
 
-        $('#recordIcon').html('file_download')//.show()
+        $('#recordIcon').html('file_download');//.show()
         setTimeout(function(){
-          $('#recordIcon').html('')//.show()
+          $('#recordIcon').html('');//.show()
 
         },3000)
       }
 
       if (key.which === 100) { //when click "d" for delete sessionStorage
-        sessionStorage.removeItem('mouseTrack')
+        sessionStorage.removeItem('mouseTrack');
 
-        $('#recordIcon').html('delete_forever')//.show()
+        $('#recordIcon').html('delete_forever');//.show()
         setTimeout(function(){
-          $('#recordIcon').html('')//.show()
+          $('#recordIcon').html('');//.show()
 
         },3000)
 
@@ -488,7 +505,7 @@ class App {
 
 
         if (key.which === 13){ //when click "Enter"
-          console.log(primary_map)
+          console.log(primary_map);
       }
 
 
