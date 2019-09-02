@@ -1,6 +1,12 @@
 import * as d3 from 'd3';
 import { allInstances } from './Map';
 
+const colorParteiArray = {AfD:"blue", NPD:"brown", Die_PARTEI:"brown", "III._Weg":"brown", DIE_RECHTE:"brown", FDP:"yellow", GRÜNE:"green", PIRATEN:"orange", FAMILIE:"orange", FREIE_WÄHLER:"orange", ÖDP:"orange", SPD:"red", DIE_LINKE:"red", CDU:"black", DIE_VIOLETTEN:"violet", Volt:"violet"
+}
+
+
+
+
 const color = d3
   .scaleOrdinal()
   //.domain(['a', 'b', 'c', 'd', 'e', 'f'])
@@ -22,7 +28,6 @@ class PieChart {
       (this.radiusPie =
         Math.min(this.widthPie, this.heightPie) / 2 - this.marginPie);
 
-    this.pieAddListener(this.getActivInstance());
 
     /**
      .call(
@@ -63,6 +68,8 @@ class PieChart {
       $(`#${this.name}_myPieChart`).append(
         `<p id='${this.name}_infoPieChart' class='${this.name} infoPieChart'></p>`
       );
+      this.pieAddListener(this.getActivInstance());
+
     } else {
       console.log('PIEISNOTNULL');
     }
@@ -106,6 +113,7 @@ class PieChart {
       .attr('class', 'middle')
       .attr('parentPie', this.name)
       .attr('fill', function(d) {
+
         return color(d.data.key);
       })
       .attr('name', function(d) {
@@ -138,7 +146,11 @@ class PieChart {
       .attr('class', 'outer')
       .attr('parentPie', this.name)
       .attr('fill', function(d) {
-        return color(d.data.key);
+        if (colorParteiArray[d.data.key] !== undefined){
+          return colorParteiArray[d.data.key];
+        } else {
+          return color(d.data.key);
+        }
       })
       .attr('name', function(d) {
         return d.data.key;
@@ -289,6 +301,7 @@ class PieChart {
 
 
   }
+
 
 
 }

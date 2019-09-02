@@ -64,7 +64,8 @@ class Legend {
       "<label class=\"btn btn_option btn-info no-margin-bottom\">" +
       "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_click_change\" autoComplete=\"off\">Auf Klick</label>" +
       "</div><i class=\"material-icons right-middle\" data-toggle='tooltip' data-placement=\"top\"data-html=\"true\" title=\"<b>automatisch</b> = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br><b>Auf Klick</b> = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.\"style=\"margin-top: 0px;\">info</i>" +
-      "</div>" +
+      "</div> <h5>Transparenz</h5>" +
+      "<input id='" + this.name + "_transparency-slider' class='transparency-slider' type='range' min='0' max='100' step='1'/>" +
       "</div>"
     );
 
@@ -222,6 +223,12 @@ class Legend {
       allInstances[id].updateData(this.year);
       //this.singleLegend(this.point,this.param2)
     });
+
+    document
+      .getElementById(this.name + "_transparency-slider")
+      .addEventListener('input', e => {
+        allInstances[id].changeTransparency(e.target.value);
+      });
 
 
     try{

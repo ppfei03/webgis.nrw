@@ -252,6 +252,32 @@ class App {
 
     const handleMousemove = event => {
       if(mouseAndClickRecord){
+        try {
+          $('.mapboxgl-ctrl-top-left').hide()
+          allInstances[0].map.scrollZoom.disable();
+          allInstances[0].map.touchZoomRotate.disable();
+          allInstances[0].map.boxZoom.disable();
+          allInstances[0].map.doubleClickZoom.disable();
+          allInstances[0].map.dragRotate.disable();
+          allInstances[0].map.dragPan.disable();
+          allInstances[0].map.flyTo({
+            center: [7.555, 51.478333],
+            zoom: 7.3
+          });
+          allInstances[1].map.dragRotate.disable();
+          allInstances[1].map.boxZoom.disable();
+          allInstances[1].map.dragPan.disable();
+          allInstances[1].map.scrollZoom.disable();
+          allInstances[1].map.doubleClickZoom.disable();
+          allInstances[1].map.touchZoomRotate.disable();
+          allInstances[1].map.touchZoomRotate.disable();
+          allInstances[1].map.flyTo({
+            center: [7.555, 51.478333],
+            zoom: 7.3
+          });
+        }catch (e) {
+
+        }
 
         addMouseCLick( event.x,  event.y, 'tracking', 'tracking')
 
@@ -449,10 +475,56 @@ class App {
 
         if(mouseAndClickRecord){
           addMouseCLick(0, 0,'recordBreak','recordStart');
+          try {
+            $('.mapboxgl-ctrl-top-left').hide()
+            allInstances[0].map.scrollZoom.disable();
+            allInstances[0].map.touchZoomRotate.disable();
+            allInstances[0].map.boxZoom.disable();
+            allInstances[0].map.doubleClickZoom.disable();
+            allInstances[0].map.dragRotate.disable();
+            allInstances[0].map.dragPan.disable();
+            allInstances[0].map.flyTo({
+              center: [7.555, 51.478333],
+              zoom: 7.3
+            });
+            allInstances[1].map.dragRotate.disable();
+            allInstances[1].map.boxZoom.disable();
+            allInstances[1].map.dragPan.disable();
+            allInstances[1].map.scrollZoom.disable();
+            allInstances[1].map.doubleClickZoom.disable();
+            allInstances[1].map.touchZoomRotate.disable();
+            allInstances[1].map.touchZoomRotate.disable();
+            allInstances[1].map.flyTo({
+              center: [7.555, 51.478333],
+              zoom: 7.3
+            });
+          }catch (e) {
 
+          }
           $('#recordIcon').html('fiber_manual_record');//.show()
         }else{
           addMouseCLick(0, 0,'recordBreak','recordEnd');
+
+          try {
+            $('.mapboxgl-ctrl-top-left').show()
+
+            allInstances[0].map.scrollZoom.enable();
+            allInstances[0].map.dragRotate.enable();
+            allInstances[0].map.boxZoom.enable();
+            allInstances[0].map.dragPan.enable();
+            allInstances[0].map.doubleClickZoom.enable();
+            allInstances[0].map.touchZoomRotate.enable();
+
+            allInstances[1].map.scrollZoom.enable();
+            allInstances[1].map.boxZoom.enable();
+            allInstances[1].map.dragRotate.enable();
+            allInstances[1].map.dragPan.enable();
+            allInstances[1].map.doubleClickZoom.enable();
+            allInstances[1].map.touchZoomRotate.enable();
+
+          }catch (e) {
+
+          }
 
           $('#recordIcon').html('');//hide()
         }
@@ -497,17 +569,11 @@ class App {
         $('#recordIcon').html('delete_forever');//.show()
         setTimeout(function(){
           $('#recordIcon').html('');//.show()
-
         },3000)
-
       }
-
-
-
         if (key.which === 13){ //when click "Enter"
           console.log(primary_map);
       }
-
 
     });
 

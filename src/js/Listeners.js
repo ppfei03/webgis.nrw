@@ -76,11 +76,7 @@ export default class Listeners {
       }
     });
 
-    document
-      .getElementById('transparency-slider')
-      .addEventListener('input', e => {
-        this.getActiveMap().changeTransparency(e.target.value);
-      });
+
 
     document.getElementById('population_data').addEventListener('click', () => {
       console.log('pop');
