@@ -226,10 +226,10 @@ class App {
 
 
 
-    $('.legend-wrapper').draggable({
+    /*$('.legend-wrapper').draggable({
       cancel: false,
       revert: false,
-    });
+    });*/
 
 
     //$('.draggable').addClass('ui-widget-content')
@@ -438,10 +438,10 @@ class App {
         }catch(error){
         console.log(error)
         }
-        $('.legend-wrapper').draggable({
+        /*$('.legend-wrapper').draggable({
           cancel: false,
           revert: false,
-        });
+        });*/
 
       }
 
@@ -450,10 +450,10 @@ class App {
 
     })
     $('#legend-standard').click(function() {
-      $('.legend-wrapper').draggable({
+     /* $('.legend-wrapper').draggable({
         cancel: false,
         revert: false,
-      });
+      });*/
       if(duoLegend) {
         console.log('legend-standard')
         $(`#${allInstances[0].pieName}_myPieChart`).remove()
