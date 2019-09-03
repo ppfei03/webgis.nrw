@@ -44,6 +44,8 @@ input[type=color] {
 #dual_map {
     border-left: .15vw solid black;
 }
+.draggable {cursor: grab;}
+.ui-draggable-dragging {cursor: grabbing;}
 
 #split_map {
     position: absolute;

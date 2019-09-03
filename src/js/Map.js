@@ -55,7 +55,7 @@ export default class Map {
     });
     allInstances.push(this);
     //this._updatePipe(data1);
-    this.legende = new Legend(this.legendName);
+    this.legende = new Legend(this.legendName,'legend');
 
     this.map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
@@ -77,6 +77,30 @@ export default class Map {
 
   getMap() {
     return this.map;
+  }
+
+  makeClearNewLegend(){
+    this.loadData();
+    //this.getActiveMap().hideFullMapLegend();
+    this.pieChart = '';
+    this.legende = '';
+    $(`#${this.legendName}`)
+      .children()
+      .remove();
+    //$(`#${this.pieName}_myPieChart`).remove();
+    this.pieEnable = false;
+
+    this.alldata = {
+      data: false,
+      enabled: false
+    };
+    this.statistics_state = {
+      enabled: false,
+      type: '',
+      colorStops: []
+    };
+
+    this.legende = new Legend(this.legendName, this.legendName);
   }
 
   getTitle() {
@@ -743,8 +767,8 @@ export default class Map {
         (classes[i + 1] - classes[i]) /
         (classes[classes.length - 1] - classes[0]);
 
-      const lowerBound = Math.round(classes[i] * 10) / 10;
-      const upperBound = Math.round(classes[i + 1] * 10) / 10;
+      const lowerBound = Math.round(classes[i] * 100) / 100;
+      const upperBound = Math.round(classes[i + 1] * 100) / 100;
       if (i === colors.length - 1) {
         $(`#${this.legendName}_legend-labels`).append(
           `<li style="flex: ${liFlex}">
@@ -899,6 +923,7 @@ export default class Map {
       this.statistics_state.enabled = false;
       this._hideLegend();
     }
+    this.legende.mapLegendeShow();
     $('.legend-info-wrapper').show();
 
     //this._updatePipe(data1);
@@ -1023,7 +1048,6 @@ export default class Map {
           });
           try {
             if (this.laststate !== states[0].properties.Gemeindename) {
-              console.log(states[0].properties.Gemeindename);
 
               this.laststate = states[0].properties.Gemeindename;
 

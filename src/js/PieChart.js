@@ -1,11 +1,24 @@
 import * as d3 from 'd3';
 import { allInstances } from './Map';
 
-const colorParteiArray = {AfD:"blue", NPD:"brown", Die_PARTEI:"brown", "III._Weg":"brown", DIE_RECHTE:"brown", FDP:"yellow", GRÜNE:"green", PIRATEN:"orange", FAMILIE:"orange", FREIE_WÄHLER:"orange", ÖDP:"orange", SPD:"red", DIE_LINKE:"red", CDU:"black", DIE_VIOLETTEN:"violet", Volt:"violet"
-}
-
-
-
+const colorParteiArray = {
+  AfD: 'blue',
+  NPD: 'brown',
+  Die_PARTEI: 'brown',
+  'III._Weg': 'brown',
+  DIE_RECHTE: 'brown',
+  FDP: 'yellow',
+  GRÜNE: 'green',
+  PIRATEN: 'orange',
+  FAMILIE: 'orange',
+  FREIE_WÄHLER: 'orange',
+  ÖDP: 'orange',
+  SPD: 'red',
+  DIE_LINKE: 'red',
+  CDU: 'black',
+  DIE_VIOLETTEN: 'violet',
+  Volt: 'violet'
+};
 
 const color = d3
   .scaleOrdinal()
@@ -27,7 +40,6 @@ class PieChart {
       (this.marginPie = 10),
       (this.radiusPie =
         Math.min(this.widthPie, this.heightPie) / 2 - this.marginPie);
-
 
     /**
      .call(
@@ -51,7 +63,9 @@ class PieChart {
       console.log('PIEISNULL');
 
       this.svg = d3
-        .select(`#${this.name}_pieChart`)
+        .select(
+          `#${allInstances[this.getActivInstance()].legendName}-pie-chart`
+        )
         .append('div')
         .attr('id', `${this.name}_myPieChart`)
         .append('svg')
@@ -69,7 +83,6 @@ class PieChart {
         `<p id='${this.name}_infoPieChart' class='${this.name} infoPieChart'></p>`
       );
       this.pieAddListener(this.getActivInstance());
-
     } else {
       console.log('PIEISNOTNULL');
     }
@@ -113,7 +126,6 @@ class PieChart {
       .attr('class', 'middle')
       .attr('parentPie', this.name)
       .attr('fill', function(d) {
-
         return color(d.data.key);
       })
       .attr('name', function(d) {
@@ -146,11 +158,11 @@ class PieChart {
       .attr('class', 'outer')
       .attr('parentPie', this.name)
       .attr('fill', function(d) {
-        if (colorParteiArray[d.data.key] !== undefined){
+        if (colorParteiArray[d.data.key] !== undefined) {
           return colorParteiArray[d.data.key];
-        } else {
-          return color(d.data.key);
         }
+
+        return color(d.data.key);
       })
       .attr('name', function(d) {
         return d.data.key;
@@ -270,7 +282,7 @@ class PieChart {
     console.log(this.name);
 
     document
-      .getElementById(`${this.name}_pieChart`)
+      .getElementById(`${this.name}_myPieChart`)
       .addEventListener('click', e => {
         const target = $(e.target);
         const dataKey = e.path[0].attributes[4].value;
@@ -286,7 +298,7 @@ class PieChart {
           $(`#${allInstances[id].legendName}_legend`).show();
 */
           allInstances[id].statistics_state.enabled = false;
-          allInstances[id].legende.legendDiscreteHide()
+          allInstances[id].legende.legendDiscreteHide();
           allInstances[id].legende.legendeShow();
           data = false;
         }
@@ -294,16 +306,11 @@ class PieChart {
         allInstances[id].updateData(dataKey, data);
 
         try {
-          allInstances[id].statistics_state.type = 'STANDARD'
+          allInstances[id].statistics_state.type = 'STANDARD';
           // eslint-disable-next-line no-empty
         } catch (error) {}
       });
-
-
   }
-
-
-
 }
 
 export default PieChart;

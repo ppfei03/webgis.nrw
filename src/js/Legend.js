@@ -13,11 +13,15 @@ class Legend {
   legendId="";
 
 
-  constructor(name) {
+  constructor(name,parent) {
 
     this.name = name;
+    this.parent = parent;
 
-    $("#legend-heading" + this.legendId).append("<h3 id='" + this.name + "_legend-heading' class='legend-title editable " + this.name + "'></h3>");
+    $('#'+ this.parent).append(this.getClearLegendTemplate());
+    this.legendAddListener(this.getActivInstance());
+
+    /*$("#legend-heading" + this.legendId).append("<h3 id='" + this.name + "_legend-heading' class='legend-title editable " + this.name + "'></h3>");
 
     //$("#year" + this.legendId).append("<h5 id='" + this.name + "_year' class='" + this.name + "'></h5>");
 
@@ -31,91 +35,101 @@ class Legend {
       "</div>");
 
     $("#legend-scale-bar" + this.legendId).append(
-      "<div id='" + this.name + "_discrete-legend' class='discrete-legend " + this.name + "' style=\"display: none;\">" +
-      "<ul id='" + this.name + "_legend-labels' class=\"legend-labels\">" +
-      "<li><span style=\"background:#F1EEF6;\"></span><br/>0 - 20%</li>" +
-      "<li><span style=\"background:#BDC9E1;\"></span><br/>40%</li>" +
-      "<li><span style=\"background:#74A9CF;\"></span><br/>60%</li>" +
-      "<li><span style=\"background:#2B8CBE;\"></span><br/>80%</li>" +
-      "<li><span style=\"background:#045A8D;\"></span><br/>100%</li>" +
+      "<div id='" + this.name + "_discrete-legend' class='discrete-legend " + this.name + "' style='display: none;'>" +
+      "<ul id='" + this.name + "_legend-labels' class='legend-labels'>" +
+      "<li><span style='background:#F1EEF6;'></span><br/>0 - 20%</li>" +
+      "<li><span style='background:#BDC9E1;'></span><br/>40%</li>" +
+      "<li><span style='background:#74A9CF;'></span><br/>60%</li>" +
+      "<li><span style='background:#2B8CBE;'></span><br/>80%</li>" +
+      "<li><span style='background:#045A8D;'></span><br/>100%</li>" +
       "</ul>" +
       "</div>");
 
     $("#map_data_option" + this.legendId).append(
-      "<div class='" + this.name + "' id=\"" + this.name + "_map_data_option\">" +
-      "<div id=\"" + this.name + "_border_option\" class=\"option-menue\">" +
+      "<div class='" + this.name + "' id='" + this.name + "_map_data_option'>" +
+      "<div id='" + this.name + "_border_option' class='option-menue'>" +
       "<label>Grenzen anpassen auf </label>" +
-      "<div class=\"btn-group btn-group-toggle\" data-toggle=\"buttons\">" +
-      "<label class=\"btn btn_option btn-info active no-margin-bottom\" id=\"" + this.name + "_border_year\" >" +
-      "<input type=\"radio\" name=\"options\"  autoComplete=\"off\" checked>Jahr" +
+      "<div class='btn-group btn-group-toggle' data-toggle='buttons'>" +
+      "<label class='btn btn_option btn-info active no-margin-bottom' id='" + this.name + "_border_year' >" +
+      "<input type='radio' name='options'  autoComplete='off' checked>Jahr" +
       "</label>" +
-      "<label class=\"btn btn_option btn-info no-margin-bottom\" id=\"" + this.name + "_border_data\">" +
-      "<input type=\"radio\" name=\"options\"  autoComplete=\"off\">Daten" +
+      "<label class='btn btn_option btn-info no-margin-bottom' id='" + this.name + "_border_data'>" +
+      "<input type='radio' name='options'  autoComplete='off'>Daten" +
       "</label>" +
       "</div>" +
-      "<i class=\"material-icons right-middle\" data-toggle='tooltip' data-placement=\"top\"" +
-      "data-html=\"true\" title=\"<b>Jahr</b> = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br><b>Daten</b> = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst.\"style=\"margin-top: 0px;\">info</i>" +
+      "<i class='material-icons right-middle' data-toggle='tooltip' data-placement='top'" +
+      "data-html='true' title='<b>Jahr</b> = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br><b>Daten</b> = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst.'style='margin-top: 0px;'>info</i>" +
       "</div>" +
-      " <div class=\"option-menue\">" +
+      " <div class='option-menue'>" +
       "<label>Veränderung</label>" +
-      "<div class=\"btn-group btn-group-toggle\" data-toggle=\"buttons\">" +
-      "<label class=\"btn btn_option btn-info active no-margin-bottom\">" +
-      "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_auto_change\" autoComplete=\"off\" checked>automatisch</label>" +
-      "<label class=\"btn btn_option btn-info no-margin-bottom\">" +
-      "<input type=\"radio\" name=\"options\" id=\"" + this.name + "_click_change\" autoComplete=\"off\">Auf Klick</label>" +
-      "</div><i class=\"material-icons right-middle\" data-toggle='tooltip' data-placement=\"top\"data-html=\"true\" title=\"<b>automatisch</b> = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br><b>Auf Klick</b> = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.\"style=\"margin-top: 0px;\">info</i>" +
+      "<div class='btn-group btn-group-toggle' data-toggle='buttons'>" +
+      "<label class='btn btn_option btn-info active no-margin-bottom'>" +
+      "<input type='radio' name='options' id='" + this.name + "_auto_change' autoComplete='off' checked>automatisch</label>" +
+      "<label class='btn btn_option btn-info no-margin-bottom'>" +
+      "<input type='radio' name='options' id='" + this.name + "_click_change' autoComplete='off'>Auf Klick</label>" +
+      "</div><i class='material-icons right-middle' data-toggle='tooltip' data-placement='top'data-html='true' title='<b>automatisch</b> = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br><b>Auf Klick</b> = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.'style='margin-top: 0px;'>info</i>" +
       "</div> <h5>Transparenz</h5>" +
       "<input id='" + this.name + "_transparency-slider' class='transparency-slider' type='range' min='0' max='100' step='1'/>" +
       "</div>"
     );
 
     $("#timeslider" + this.legendId).append(
-      "<div id=\"" + this.name + "_timeslider\" class=\"timeslider " + this.name + "\" style=\"display: none\">" +
-      " <i id=\"" + this.name + "_timeslide-play\" class=\"material-icons timeslide-control\">play_arrow</i>" +
-      "<i id=\"" + this.name + "_timeslide-pause\" class=\"material-icons timeslide-control\" style=\"display: none\">pause</i>" +
-      "<div class=\"grow\">" +
-      "<div class=\"labels\">" +
-      "<label id=\"" + this.name + "_timeslide-min\" class=\"timeslide-min\">1962</label>" +
-      "<label id=\"" + this.name + "_timeslide-center\" class=\"timeslide-center\"></label>" +
-      "<label id=\"" + this.name + "_timeslide-max\" class=\"timeslide-max\">2010</label>" +
+      "<div id='" + this.name + "_timeslider' class='timeslider " + this.name + "' style='display: none'>" +
+      " <i id='" + this.name + "_timeslide-play' class='material-icons timeslide-control'>play_arrow</i>" +
+      "<i id='" + this.name + "_timeslide-pause' class='material-icons timeslide-control' style='display: none'>pause</i>" +
+      "<div class='grow'>" +
+      "<div class='labels'>" +
+      "<label id='" + this.name + "_timeslide-min' class='timeslide-min'>1962</label>" +
+      "<label id='" + this.name + "_timeslide-center' class='timeslide-center'></label>" +
+      "<label id='" + this.name + "_timeslide-max' class='timeslide-max'>2010</label>" +
       "</div>" +
-      "<input id=\"" + this.name + "_slider\" class=\"slider\" type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"0\"/>" +
+      "<input id='" + this.name + "_slider' class='slider' type='range' min='0' max='100' step='1' value='0'/>" +
       "</div>" +
-      "<i id=\"" + this.name + "_download_gif\" class=\"material-icons timeslide-control\" style=\"display: none\">gif</i>" +
-      "<div id=\"" + this.name + "_download_gif_spinner\" class=\"download_gif_spinner\" style=\"display: none\"></div>" +
+      "<i id='" + this.name + "_download_gif' class='material-icons timeslide-control' style='display: none'>gif</i>" +
+      "<div id='" + this.name + "_download_gif_spinner' class='download_gif_spinner' style='display: none'></div>" +
       "</div>"
     );
     let pieName = allInstances[this.getActivInstance()].pieName
 
     $("#legend-pie-chart" + this.legendId).append(
-      "<div id=\"" + pieName + "_pieChart\" class=\"pieChart " + pieName + "\" style=\"display: none\">" +
+      "<div id='" + pieName + "_pieChart' class='pieChart " + pieName + "' style='display: none'>" +
 
       "</div>"
     );
 
-    $("#data-info" + this.legendId).append("<div id=\"" + this.name + "_data-info\" class=\"row data-info " + this.name + "\" >\n" +
-      "      <p className=\"col-md-12\">Bewege die Maus über die Kreise</p>\n" +
+    $("#data-info" + this.legendId).append("<div id='" + this.name + "_data-info' class='row data-info " + this.name + "' >" +
+      "      <p class='col-md-12'>Bewege die Maus über die Kreise</p>" +
       "    </div>");
-
-
-    this.legendAddListener(this.getActivInstance());
+*/
 
   }
 
   legendActivate() {
 //console.log('legendActivate')
     if(allInstances[this.getActivInstance()].feature_dataset === undefined){
-      this.mapLegendeHide();
+      console.log('undefined')
+      //console.log(this.getActivInstance())
+      //this.hideFullMapLegend();
+
       if (!duoLegend) {
-      $(".data-info").hide()}
-      $("#" + this.name + "_data-info").show()
+        console.log('if (!duoLegend) {')
+        console.log(duoLegend)
+        allInstances.forEach(function(map) {
+          map.legende.hideFullMapLegend();
+        });
+        this.showFullMapLegend()
+      }
+
+
+      //$("#" + this.name + "_data-info").show()
     }else{
       if (!duoLegend) {
         allInstances.forEach(function(map) {
-          map.legende.mapLegendeHide();
+          map.legende.hideFullMapLegend();
         });
       }
-      allInstances[this.getActivInstance()].legende.mapLegendeShow();
+      this.showFullMapLegend();
+      //allInstances[this.getActivInstance()].legende.showFullMapLegend();
     }
 
     try {
@@ -146,7 +160,7 @@ class Legend {
   legendAddListener(id) {
     //console.log("legendAddListener");
 
-    $("[data-toggle=\"tooltip\"]").tooltip();
+    $("[data-toggle='tooltip']").tooltip();
 
 
     document.getElementById(this.name + "_border_year").addEventListener("click", () => {
@@ -231,7 +245,15 @@ class Legend {
       });
 
 
-    try{
+    //try{
+    $('#legend ').on('shown.bs.collapse', function () {
+      console.log("Opened")
+    });
+
+    $('#legend ').on('hidden.bs.collapse', function () {
+      console.log("Closed")
+    });
+
       $('#legend_collapse').on('click', () => {
         $('#legend_collapse').toggleClass('rotate');
       });
@@ -244,9 +266,8 @@ class Legend {
     $('#more_collapse_center').on('click', () => {
       $('.more_collapse_center').toggleClass('rotate');
     });
-}catch(error){
-      console.log(error)
-    }
+//}catch(error){
+      ////}
 
   }
 
@@ -357,15 +378,11 @@ class Legend {
 
   changeLegendScaleBar(data) {
     //console.log("changeLegendScaleBar");
-    console.log(data)
-
     $("#" + this.name + "_legend-min").html(Statistics.getMin(data));
     $("#" + this.name + "_legend-max").html(Statistics.getMax(data));
   }
 
   legendeShow() {
-    //console.log("legendeShow");
-
     $("#" + this.name + "_legend-bar").show();
     $("#" + this.name + "_legend-min").show();
     $("#" + this.name + "_legend-max").show();
@@ -409,6 +426,14 @@ class Legend {
     }
   }
 
+  hideFullMapLegend(){
+    $("#" + this.name).hide();
+  }
+
+  showFullMapLegend(){
+    $("#" + this.name).show();
+  }
+
   mapLegendeHide() {
     //console.log("mapLegendeShow");
 
@@ -433,7 +458,101 @@ class Legend {
     $("#" + this.name + "_timeslide-min").html(allInstances[id]._getFirstYearOfDataset());
     $("#" + this.name + "_timeslide-max").html(allInstances[id]._getLastYearOfDataset());
     $("#" + this.name + "_slider").attr("min", allInstances[id]._getFirstYearOfDataset()).attr("max", allInstances[id]._getLastYearOfDataset());
+
   }
+
+
+  getClearLegendTemplate() {
+  return "<div class='my-legend' id='" + this.name + "'>" +
+    "    <div class='legend-info-wrapper' >" +
+    "        <div id='" + this.name + "_data-info' class='row data-info " + this.name + "' style=''>" +
+    "        </div>" +
+    "      </div>" +
+    "      <!--                <div id='legend-heading'></div>-->" +
+    "      <!--                <div id='year'></div>-->" +
+    "      <div id='legend-scale-bar' class='scale-legend'>" +
+    "        <div id='" + this.name + "_legend' class=' scale-legend " + this.name + "' style='display: none;'>" +
+    "          <div class='legend-bar' id='" + this.name + "_legend-bar'></div>" +
+    "          <div class='labels'>" +
+    "            <div class='label legend-min' id='" + this.name + "_legend-min'>0</div>" +
+    "            <div class='label legend-max' id='" + this.name + "_legend-max'>100</div>" +
+    "          </div>" +
+    "        </div>" +
+    "        <div id='" + this.name + "_discrete-legend' class='discrete-legend " + this.name + "' style='display: none;'>" +
+    "          <ul id='" + this.name + "_legend-labels' class='legend-labels'>" +
+    "            <li><span style='background:#F1EEF6;'></span><br>0 - 20%</li>" +
+    "            <li><span style='background:#BDC9E1;'></span><br>40%</li>" +
+    "            <li><span style='background:#74A9CF;'></span><br>60%</li>" +
+    "            <li><span style='background:#2B8CBE;'></span><br>80%</li>" +
+    "            <li><span style='background:#045A8D;'></span><br>100%</li>" +
+    "          </ul>" +
+    "        </div>" +
+    "      </div>" +
+    "      <div id='" + this.name + "-pie-chart' class='legend-pie-chart'>" +
+    "      </div>" +
+    "      <p id='" + this.name + "_more_collapse' class='moreArrowToggle' data-toggle='collapse' data-target='." + this.name + "mapSettings'>" +
+    "        <i class='" + this.name + "_arrowToggle material-icons rotate-down' aria-expanded='true'>keyboard_arrow_down</i>" +
+    "        ..." +
+    "        <i class='" + this.name + "_arrowToggle material-icons rotate-down' aria-expanded='true'>keyboard_arrow_down</i>" +
+    "      </p>" +
+    "      <div class='" + this.name + "mapSettings collapse multi-collapse'>" +
+    "        <hr style='border-top: 1px solid rgba(0, 0, 0, 0.21);'>" +
+    "          <div class='flex-timeslider'>" +
+    "            <div class='timeslider-wrapper'>" +
+    "                <div id='" + this.name + "_timeslider' class='timeslider " + this.name + "' style='display: none'><i" +
+    "                  id='" + this.name + "_timeslide-play' class='material-icons timeslide-control'>play_arrow</i><i" +
+    "                  id='" + this.name + "_timeslide-pause' class='material-icons timeslide-control'" +
+    "                  style='display: none'>pause</i>" +
+    "                  <div class='grow'>" +
+    "                    <div class='labels'><label id='" + this.name + "_timeslide-min'" +
+    "                                                   class='timeslide-min'>1962</label><label" +
+    "                      id='" + this.name + "_timeslide-center' class='timeslide-center'></label><label" +
+    "                      id='" + this.name + "_timeslide-max' class='timeslide-max'>2010</label></div>" +
+    "                    <input id='" + this.name + "_slider' class='slider' type='range' min='0' max='100' step='1' value='0'>" +
+    "                  </div>" +
+    "                  <i id='" + this.name + "_download_gif' class='material-icons timeslide-control'" +
+    "                     style='display: none'>gif</i>" +
+    "                  <div id='" + this.name + "_download_gif_spinner' class='download_gif_spinner' style='display: none'></div>" +
+    "                </div>" +
+    "            </div>" +
+    "          </div>" +
+    "          <div>" +
+    "            <div id='map_data_option' class='option-menue'>" +
+    "              <div class='" + this.name + "' id='" + this.name + "_map_data_option' style='display: none;'>" +
+    "                <div id='" + this.name + "_border_option' class='option-menue'><label>Grenzen anpassen auf </label>" +
+    "                  <div class='btn-group btn-group-toggle' data-toggle='buttons'><label" +
+    "                    class='btn btn_option btn-info active no-margin-bottom' id='" + this.name + "_border_year'><input" +
+    "                    type='radio' name='options' autoComplete='off' checked=''>Jahr</label><label" +
+    "                    class='btn btn_option btn-info no-margin-bottom' id='" + this.name + "_border_data'><input type='radio'" +
+    "                                                                                                           name='options'" +
+    "                                                                                                           autoComplete='off'>Daten</label>" +
+    "                  </div>" +
+    "                  <i class='material-icons right-middle' data-toggle='tooltip' data-placement='top' data-html='true'" +
+    "                     title='' style='margin-top: 0px;'" +
+    "                     data-original-title='<b>Jahr</b> = Die Grenzen (min/max) werden an die Daten des ausgewählten Jahres angepasst.<br><b>Daten</b> = Die Grenzen (min/max) werden auf den gesamten Datenraum angepasst.'>info</i>" +
+    "                </div>" +
+    "                <div class='option-menue'><label>Veränderung</label>" +
+    "                  <div class='btn-group btn-group-toggle' data-toggle='buttons'><label" +
+    "                    class='btn btn_option btn-info active no-margin-bottom'><input type='radio' name='options'" +
+    "                                                                                       id='" + this.name + "_auto_change'" +
+    "                                                                                       autoComplete='off' checked=''>automatisch</label><label" +
+    "                    class='btn btn_option btn-info no-margin-bottom'><input type='radio' name='options'" +
+    "                                                                                id='" + this.name + "_click_change'" +
+    "                                                                                autoComplete='off'>Auf Klick</label>" +
+    "                  </div>" +
+    "                  <i class='material-icons right-middle' data-toggle='tooltip' data-placement='top' data-html='true'" +
+    "                     title='' style='margin-top: 0px;'" +
+    "                     data-original-title='<b>automatisch</b> = Das Diagramm ändert sich, automatisch sobald die Maus über die Kreise bewegt wird.<br><b>Auf Klick</b> = Das Diagramm ändert sich nur bei Klick auf einen der Kreise.'>info</i>" +
+    "                </div>" +
+    "                <h5>Transparenz</h5><input id='" + this.name + "_transparency-slider' class='transparency-slider'" +
+    "                                           type='range' min='0' max='100' step='1'></div>" +
+    "            </div>" +
+    "          </div>" +
+    "      </div>" +
+    "    </div>" +
+    "  </div>"
+  
+}
 }
 
 export default Legend;

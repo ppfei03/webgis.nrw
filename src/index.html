@@ -134,7 +134,10 @@
                     </div>
                     <hr/>
 
-                    <h5>Kartenmodus</h5>
+                    <h5>Kartenmodus</h5><i class="material-icons right-middle" data-toggle="tooltip" data-placement="top"
+                                           data-html="true"
+                                           title="Der Kartenmodus ändert die Anzahl der sichtbaren Karten.<br>Nach der Auswahl/Änderung werden evtl. getätigte Einstellungen leider nicht übernommen.">info</i>
+
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-light active">
                             <input type="radio" name="options" id="mode-standard" autocomplete="off" checked>eine Karte
@@ -146,8 +149,9 @@
                             <input type="radio" name="options" id="mode-split" autocomplete="off">Karte geteilt
                         </label>
                     </div>
+
                     <div id="legendMapOption" style="display: none">
-                    <h6>Legendenmodus</h6>
+                    <h5>Legendenmodus</h5>
                     <div class="btn-group" data-toggle="buttons">
                         <label class="btn btn-light active" id="legend-standard">
                             <input type="radio" name="options"  autocomplete="off" checked>Standard
@@ -224,8 +228,8 @@
                                     <i class="material-icons">transfer_within_a_station</i>
                                     Schutzsuchende
                                 </button>
-                                <hr>
-                                <button type="button" class="btn btn-outline-primary btn-block draggable" id="KiTas">
+                                <hr style="display: none">
+                                <button type="button" class="btn btn-outline-primary btn-block draggable" style="display: none" id="KiTas">
                                     <i class="material-icons">child_care</i>
                                     KiTas
                                 </button>
@@ -412,37 +416,8 @@
 <div class="legend-wrapper">
     <i id='legend_collapse' class="legendArrowToggle material-icons right-middle rotate-down" data-toggle="collapse" data-target=".legend"
        aria-expanded="true">keyboard_arrow_down</i>
-    <div class='legend collapse multi-collapse'>
-        <div class='my-legend'>
-            <div class='legend-info-wrapper' style="display: none">
-                <div class='info'id="data-info">
-                </div>
-<!--                <div id='legend-heading'></div>-->
-<!--                <div id='year'></div>-->
-                <div id='legend-scale-bar' class="scale-legend">
-                </div>
-                <div id='legend-pie-chart' class="legend-pie-chart">
-                </div>
-                <p id="more_collapse"class="moreArrowToggle"data-toggle="collapse" data-target=".mapSettings">
-                    <i class="arrowToggle material-icons rotate-down" aria-expanded="true">keyboard_arrow_down</i>
-                    ...mehr...
-                    <i class="arrowToggle material-icons rotate-down" aria-expanded="true">keyboard_arrow_down</i>
-                </p>
-                <div class="mapSettings collapse multi-collapse">
-                    <hr style="border-top: 1px solid rgba(0, 0, 0, 0.21);">
-                <div class="flex-timeslider">
-                    <div class='timeslider-wrapper'>
-                        <div id='timeslider'>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div id="map_data_option" class="option-menue">
-                    </div>
-                </div>
-            </div>
-            </div>
-        </div>
+    <div class='legend collapse multi-collapse' id="legend">
+
     </div>
 </div>
 

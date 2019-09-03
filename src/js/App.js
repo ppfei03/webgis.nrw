@@ -41,7 +41,7 @@ class App {
             $(`#${ui.draggable[0].id}`).click();
           }catch(error){
             console.log(error)
-            alert(error)
+            //alert(error)
           }
         }
       });
@@ -57,13 +57,14 @@ class App {
     $('#mode-dual').on('change', () => {
       $('#legendMapOption').show();
 
-      $('.split_mapLegend,.split_mapPie').remove();
+      $('#split_mapLegend').remove();
       if (!this.dualView && $('#mode-dual').is(':checked')) {
 
 
         if (this.splitView) {
           allInstances.pop();
           $('#split_map').remove();
+          $('#map').droppable({ disabled: false });
           $('.mapboxgl-compare').remove();
           this.splitView = false;
         }
@@ -88,8 +89,13 @@ class App {
         $('#dual_map').droppable({
           drop: function(event, ui) {
             listeners.setActiveMap(secondary_map);
-            $(`#${ui.draggable[0].id}`).click();
-            $(`#${ui.draggable[0].id}`).click();
+            try{
+              $(`#${ui.draggable[0].id}`).click();
+              $(`#${ui.draggable[0].id}`).click();
+            }catch(error){
+              console.log(error)
+              //alert(error)
+            }
           }
         });
 
@@ -100,7 +106,7 @@ class App {
     // split mode triggered
     $('#mode-split').on('change', () => {
       $('#legendMapOption').show();
-      $('.dual_mapLegend, .dual_mapPie').remove();
+      $('#dual_mapLegend').remove();
 
       if (!this.splitView && $('#mode-split').is(':checked')) {
         if (this.dualView) {
@@ -133,6 +139,7 @@ class App {
              * Find the slide position and compare it with the movable position (offset upper left corner) +
              * half width of the button (result is the center of the button).
              * */
+            try{
             if (
               $('.mapboxgl-compare').position().left <=
               ui.offset.left + ui.draggable[0].offsetWidth / 2
@@ -143,6 +150,9 @@ class App {
             }
             $(`#${ui.draggable[0].id}`).click();
             $(`#${ui.draggable[0].id}`).click();
+          }catch(error){
+
+            }
           }
         });
 
@@ -156,7 +166,7 @@ class App {
     $('#mode-standard').on('change', () => {
       $('#legendMapOption').hide();
 
-      $('.dual_mapLegend, .split_mapLegend, .dual_mapPie, .split_mapPie').remove();
+      $('#dual_mapLegend, #split_mapLegend').remove();
 
       if ($('#mode-standard').is(':checked')) {
         if (this.dualView) {
@@ -215,6 +225,13 @@ class App {
     });
 
 
+
+    $('.legend-wrapper').draggable({
+      cancel: false,
+      revert: false,
+    });
+
+
     //$('.draggable').addClass('ui-widget-content')
     $('.draggable').draggable({
       //helper: 'clone',
@@ -262,7 +279,7 @@ class App {
           allInstances[0].map.dragPan.disable();
           allInstances[0].map.flyTo({
             center: [7.555, 51.478333],
-            zoom: 7.3
+            zoom: 7
           });
           allInstances[1].map.dragRotate.disable();
           allInstances[1].map.boxZoom.disable();
@@ -273,7 +290,7 @@ class App {
           allInstances[1].map.touchZoomRotate.disable();
           allInstances[1].map.flyTo({
             center: [7.555, 51.478333],
-            zoom: 7.3
+            zoom: 7
           });
         }catch (e) {
 
@@ -344,22 +361,31 @@ class App {
       a.click();
     }
 
+
+
+
+
     $('#legend-duo').click(function() {
       if(!duoLegend){
+
         console.log('legend-duo')
 
-        allInstances[0].legende.mapLegendeHide();
+        allInstances.forEach(function(map) {
+          map.legende.hideFullMapLegend();
+        });
+
+        /*allInstances[0].legende.mapLegendeHide();
         allInstances[0].legende.mapLegendeInfoDataClear();
         allInstances[0].legende.mapLegendeShow();
 
         allInstances[1].legende.mapLegendeHide();
         allInstances[1].legende.mapLegendeInfoDataClear();
-        allInstances[1].legende.mapLegendeShow();
-
+        allInstances[1].legende.mapLegendeShow();*/
 
       duoLegend=true;
 
-      $(".legend-wrapper").addClass('legend-standard');
+      $(".legend-wrapper").attr('style','').addClass('legend-standard');
+
         $(`#${allInstances[0].pieName}_myPieChart`).remove()
       $("body").append($(".legend-wrapper").clone(false).addClass('legend-center').removeClass('legend-standard'));
 
@@ -369,7 +395,7 @@ class App {
           return $( ".legend", this ).addClass('center')
         }).filter(function( index ) {
           return $( ".legendArrowToggle", this ).attr('data-target','.center').attr('id','legend_collapse_center')
-        }).filter(function( index ) {
+        })/*.filter(function( index ) {
           return $( ".moreArrowToggle", this ).attr('data-target','.mapSettings_center').attr('id','more_collapse_center')
         }).filter(function( index ) {
           return $( ".arrowToggle", this ).addClass('more_collapse_center')
@@ -377,30 +403,31 @@ class App {
           return $( ".arrowToggle", this ).removeClass('arrowToggle')
         }).filter(function( index ) {
           return $( ".mapSettings", this ).addClass('mapSettings_center')
+        })*/.filter(function( index ) {
+          return $( "#dual_mapLegend", this ).remove()
         }).filter(function( index ) {
-          return $( ".dual_mapLegend", this ).remove()
+          return $( "#split_mapLegend", this ).remove()
+        })/*.filter(function( index ) {
+          return $( "#dual_mapLegend-pie-chart", this ).remove()
         }).filter(function( index ) {
-          return $( ".split_mapLegend", this ).remove()
-        }).filter(function( index ) {
-          return $( ".dual_mapPie", this ).remove()
-        }).filter(function( index ) {
-          return $( ".split_mapPie", this ).remove()
-        })
+          return $( "#split__mapLegend-pie-chart", this ).remove()
+        })*/
 
       $( ".legend-standard" )
         .filter(function( index ) {
           return $( ".legend", this ).addClass('standard')
         }).filter(function( index ) {
           return $( ".legendArrowToggle", this ).attr('data-target','.standard')
-        }).filter(function( index ) {
+        })/*.filter(function( index ) {
         return $( ".moreArrowToggle", this ).attr('data-target','.mapSettings_standard')
       }).filter(function( index ) {
         return $( ".mapSettings", this ).addClass('mapSettings_standard')
-      }).filter(function( index ) {
-        return $( ".mapLegend", this ).remove()
-      }).filter(function( index ) {
+      })*/.filter(function( index ) {
+        return $( "#mapLegend", this ).remove()
+      })/*.filter(function( index ) {
         return $( ".mapPie", this ).remove()
-      })
+      })*/
+
 
 
         allInstances[0].legende.legendAddListener(0)
@@ -408,10 +435,13 @@ class App {
         try {
           allInstances[0].pieChart.pieAddListener(0)
           allInstances[0]._addEventListener()
-
         }catch(error){
         console.log(error)
         }
+        $('.legend-wrapper').draggable({
+          cancel: false,
+          revert: false,
+        });
 
       }
 
@@ -420,20 +450,26 @@ class App {
 
     })
     $('#legend-standard').click(function() {
+      $('.legend-wrapper').draggable({
+        cancel: false,
+        revert: false,
+      });
       if(duoLegend) {
         console.log('legend-standard')
         $(`#${allInstances[0].pieName}_myPieChart`).remove()
 
 
         duoLegend = false;
+
+        $('#legend').append($("#mapLegend").clone(true));
         //$(".center").append($(".standard").clone(true));
-        $("#data-info").append($("#mapLegend_data-info").clone(true));
+        /*$("#data-info").append($("#mapLegend_data-info").clone(true));
         $("#legend-heading").append($("#mapLegend_legend-heading").clone(true));
         $("#timeslider").append($("#mapLegend_timeslider").clone(true));
         $("#legend-scale-bar").append($("#mapLegend_legend").clone(true));
         $("#legend-scale-bar").append($("#mapLegend_discrete-legend").clone(true));
         $("#map_data_option").append($("#mapLegend_map_data_option").clone(true));
-        //$("#legend-pie-chart").append($("#mapPie_pieChart").clone(true));
+        *///$("#legend-pie-chart").append($("#mapPie_pieChart").clone(true));
 
         $('.legend-center').remove();
         $( ".legend-standard" )
@@ -441,17 +477,24 @@ class App {
             return $( ".legend", this ).removeClass('standard')
           }).filter(function( index ) {
           return $("i", this).attr('data-target', '.legend')
-        }).filter(function( index ) {
+        })/*.filter(function( index ) {
           return $( ".mapSettings", this ).removeClass('mapSettings_standard')
         }).filter(function( index ) {
           return $( ".moreArrowToggle", this ).attr('data-target','.mapSettings').attr('id','more_collapse')
-        }).removeClass('legend-standard');
+        })*/.removeClass('legend-standard');
 
-        allInstances[1].legende.mapLegendeHide();
+        /*allInstances[1].legende.mapLegendeHide();
         allInstances[0].legende.mapLegendeShow();
 
         allInstances[0].legende.mapLegendeInfoDataClear();
         allInstances[1].legende.mapLegendeInfoDataClear();
+*/
+        $(".legend-wrapper").attr('style','')
+
+        allInstances.forEach(function(map) {
+          map.legende.hideFullMapLegend();
+        });
+
 
         allInstances[1].legende.legendAddListener(1);
         allInstances[0].legende.legendAddListener(0);
@@ -485,7 +528,7 @@ class App {
             allInstances[0].map.dragPan.disable();
             allInstances[0].map.flyTo({
               center: [7.555, 51.478333],
-              zoom: 7.3
+              zoom: 7
             });
             allInstances[1].map.dragRotate.disable();
             allInstances[1].map.boxZoom.disable();
@@ -496,7 +539,7 @@ class App {
             allInstances[1].map.touchZoomRotate.disable();
             allInstances[1].map.flyTo({
               center: [7.555, 51.478333],
-              zoom: 7.3
+              zoom: 7
             });
           }catch (e) {
 
